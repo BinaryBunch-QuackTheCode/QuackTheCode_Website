@@ -15,7 +15,7 @@ function Login({ onJoin }) {
         setStep("name"); // move to name entry
     } else {
         console.log("Player name:", name);
-        onJoin(); // enter the game
+        onJoin(pin, name); // enter the game
     }
   };
 
