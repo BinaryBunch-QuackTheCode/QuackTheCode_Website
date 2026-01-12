@@ -1,36 +1,57 @@
 import express from 'express';
-import { leetcodeQuestion } from './leetcode.js'
-import cors from 'cors'; 
-import { Socket } from 'socket.io';
-import { createServer} from 'http';
+import { leetcodeQuestion } from './leetcode.js';
+import cors from 'cors';
+import { Server } from 'socket.io';
+import { createServer } from 'http';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// Create __dirname for ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
+const server = createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: ['http://localhost:5173'],
+    methods: ['GET', 'POST']
+  }
+});
 
 const PORT = 3000;
 
 app.use(express.json());
-app.use(cors({origin: 'http://localhost:5173'}));
+app.use(cors());
+
+// Serve frontend static files
 app.use(express.static(path.join(__dirname, '../frontend/dist')));
 
+// API routes
 app.post('/submit', (req, res) => {
-  const {code} = req.body;
+  const { code } = req.body;
   console.log(code);
   res.json({ message: 'Hello from the backend!' });
 });
 
 app.get('/get_questions', (req, res) => {
-  /* 
-  for(let i = 0; i < 5; i ++){
-    console.log(Math.floor(Math.random() * leetcodeQuestion.length));
-  }
-  */ 
   res.json(leetcodeQuestion[Math.floor(Math.random() * leetcodeQuestion.length)]);
-})
+});
 
+// Socket.io connection handling
+io.on('connection', (socket) => {
+  console.log('User connected:', socket.id);
+
+  socket.on('disconnect', () => {
+    console.log('User disconnected:', socket.id);
+  });
+});
+
+// Catch-all: serve React app for any other routes (must be LAST)
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../frontend/dist', 'index.html'));
 });
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });

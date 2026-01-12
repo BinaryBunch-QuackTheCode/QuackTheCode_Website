@@ -17,7 +17,7 @@ function App() {
 
   async function runCode(){
     try{
-      const response = await axios.post('http://localhost:3000/submit', {code: editorRef.current.getValue()});
+      const response = await axios.post('/submit', {code: editorRef.current.getValue()});
       console.log(response.data.message);
     }catch(e){
       console.log(`Error: ${e}`);
@@ -27,7 +27,7 @@ function App() {
   useEffect(() => {
     const getQuestions = async () => {
       try{
-        const response = await axios.get('http://localhost:3000/get_questions');
+        const response = await axios.get('/get_questions');
         setQuestions(response.data);
         console.log(response.data)
       } catch(e){
