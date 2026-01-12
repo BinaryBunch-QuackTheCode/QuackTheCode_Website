@@ -1,6 +1,6 @@
 {
   "name": "backend",
-  "type": "module", 
+  "type": "module",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
@@ -14,7 +14,9 @@
   "description": "",
   "dependencies": {
     "cors": "^2.8.5",
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "http": "^0.0.1-security",
+    "socket.io": "^4.8.3"
   },
   "devDependencies": {
     "nodemon": "^3.1.11"

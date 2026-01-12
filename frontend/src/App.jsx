@@ -62,11 +62,11 @@ function App() {
     )}
       {screen === "game" && (
         <>
-        <h1> 
-          {questions[0].title}
+        <h1 className='font-bold'> 
+          {questions.title}
         </h1>
         <p>
-          {questions[0].question}
+          {questions.question}
         </p>
         <Editor
           height="90vh"
