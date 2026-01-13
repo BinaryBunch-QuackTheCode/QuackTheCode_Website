@@ -5,6 +5,8 @@ import { Server } from 'socket.io';
 import { createServer } from 'http';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import http from 'http'
+import fs from 'fs'
 
 // Create __dirname for ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -18,8 +20,8 @@ const io = new Server(server, {
     methods: ['GET', 'POST']
   }
 });
-
 const PORT = 3000;
+const SOCKET_PATH = '/tmp/code-executor.sock';
 
 app.use(express.json());
 app.use(cors());
