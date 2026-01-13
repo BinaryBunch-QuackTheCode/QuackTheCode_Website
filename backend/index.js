@@ -5,8 +5,6 @@ import { Server } from 'socket.io';
 import { createServer } from 'http';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import http from 'http'
-import fs from 'fs'
 
 // Create __dirname for ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -21,7 +19,11 @@ const io = new Server(server, {
   }
 });
 const PORT = 3000;
-const SOCKET_PATH = '/tmp/code-executor.sock';
+
+/* 
+  If the file already exists at the path then delete it.
+  Program will error if the server crashed and we try listening to the same socket
+*/
 
 app.use(express.json());
 app.use(cors());
@@ -29,7 +31,6 @@ app.use(cors());
 // Serve frontend static files
 app.use(express.static(path.join(__dirname, '../frontend/dist')));
 
-// API routes
 app.post('/submit', (req, res) => {
   const { code } = req.body;
   console.log(code);
@@ -38,15 +39,6 @@ app.post('/submit', (req, res) => {
 
 app.get('/get_questions', (req, res) => {
   res.json(leetcodeQuestion[Math.floor(Math.random() * leetcodeQuestion.length)]);
-});
-
-// Socket.io connection handling
-io.on('connection', (socket) => {
-  console.log('User connected:', socket.id);
-
-  socket.on('disconnect', () => {
-    console.log('User disconnected:', socket.id);
-  });
 });
 
 // Catch-all: serve React app for any other routes (must be LAST)
