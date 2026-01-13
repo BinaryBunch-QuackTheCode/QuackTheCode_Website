@@ -1,15 +1,16 @@
-import React, { useRef, useEffect, useState} from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import Editor from '@monaco-editor/react';
 import axios from 'axios';
 import Login from "./pages/Login/Login";
 import Lobby from "./pages/Lobby/Lobby";
+import StartGame from "./pages/StartGame/StartGame";
 
 function App() {
   const editorRef = useRef(null);
 
-  const [questions, setQuestions] = useState(null)
+  const [questions, setQuestions] = useState(null);
   const [screen, setScreen] = useState("login");
-  const [gamePin, setGamePin] = useState("")
+  const [gamePin, setGamePin] = useState("");
   const [playerName, setPlayerName] = useState("");
   function handleEditorDidMount(editor, monaco) {
     editorRef.current = editor;
@@ -50,8 +51,20 @@ function App() {
           setPlayerName(name);
           setScreen("lobby");
         }}
+        onStartGame={() => setScreen("startGame")}
       />
     )}
+
+    {screen === "startGame" && (
+      <StartGame
+        onHostJoin={(pin, name) => {
+          setGamePin(pin);
+          setPlayerName(name);
+          setScreen("lobby");
+        }}
+        onBack={() => setScreen("login")}
+      />
+    )} 
 
     {screen === "lobby" && (
       <Lobby
