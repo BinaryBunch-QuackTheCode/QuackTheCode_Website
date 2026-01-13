@@ -2,7 +2,7 @@
 import { useState } from "react";
 import "./Login.css";
 
-function Login({ onJoin }) {
+function Login({ onJoin, onStartGame }) {
   const [pin, setPin] = useState("");
   /*store name*/
   const [name, setName] = useState("");
@@ -48,6 +48,15 @@ function Login({ onJoin }) {
           {step === "pin" ? "Enter PIN" : "Join Game"}
         </button>
       </form>
+
+      {/* Start Game button */}
+      <button
+        type="button"
+        className="login-button"
+        onClick={onStartGame}
+      >
+          Start a Game
+      </button>
     </div>
   );
 }
