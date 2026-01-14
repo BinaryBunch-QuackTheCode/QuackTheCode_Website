@@ -48,7 +48,9 @@ function Login({ onJoin, onStartGame }) {
           {step === "pin" ? "Enter PIN" : "Join Game"}
         </button>
       </form>
-
+      <h1 className="font-bold my-2">
+        OR
+      </h1>
       {/* Start Game button */}
       <button
         type="button"

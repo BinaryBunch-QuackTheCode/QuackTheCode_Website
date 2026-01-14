@@ -5,8 +5,7 @@ import { Server } from 'socket.io';
 import { createServer } from 'http';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import http from 'http'
-import fs from 'fs'
+import net from 'net';
 
 // Create __dirname for ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -21,7 +20,10 @@ const io = new Server(server, {
   }
 });
 const PORT = 3000;
-const SOCKET_PATH = '/tmp/code-executor.sock';
+
+// Use Unix socket on Linux, TCP on Windows
+const isWindows = process.platform === 'win32';
+const EXECUTOR_PATH = isWindows ? { host: 'localhost', port: 3001 } : { path: '/tmp/executor.sock' };
 
 app.use(express.json());
 app.use(cors());
@@ -33,6 +35,33 @@ app.use(express.static(path.join(__dirname, '../frontend/dist')));
 app.post('/submit', (req, res) => {
   const { code } = req.body;
   console.log(code);
+  const client = net.createConnection(EXECUTOR_PATH, () => { //runs after connection succeeds
+    console.log('Connected to the C++ Executor!');
+    const message = {
+      player_id: 1,
+      user_code: code,
+      test_code: ""
+    };
+    const payload = JSON.stringify(message) + '\n';
+    /* 
+    sends the JSON through the socket and 
+    prints "Payload sent " after the JSON is sent 
+    */
+    client.write(payload, () => { 
+        console.log('Payload sent');
+    });
+  })
+
+  client.on('end', () => {
+    console.log('Disconnected from server');
+  });
+  
+  client.on('error', (err) => {
+    console.log(err);  // Check what this is
+    console.log(typeof err);  // Check type
+    console.log(err.message);  // Might be undefined
+  });
+
   res.json({ message: 'Hello from the backend!' });
 });
 
@@ -40,14 +69,6 @@ app.get('/get_questions', (req, res) => {
   res.json(leetcodeQuestion[Math.floor(Math.random() * leetcodeQuestion.length)]);
 });
 
-// Socket.io connection handling
-io.on('connection', (socket) => {
-  console.log('User connected:', socket.id);
-
-  socket.on('disconnect', () => {
-    console.log('User disconnected:', socket.id);
-  });
-});
 
 // Catch-all: serve React app for any other routes (must be LAST)
 app.get('/{*splat}', (req, res) => {
