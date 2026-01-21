@@ -5,13 +5,36 @@ import Lobby from "./pages/Lobby/Lobby";
 import StartGame from "./pages/StartGame/StartGame";
 import CodeEditor from './pages/Game/CodeEditor';
 import LeetQuestion from './pages/Game/LeetQuestion';
+import socket from './services/socket';
+
 function App() {
-  const editorRef = useRef(null);
   const [questions, setQuestions] = useState(null);
   const [screen, setScreen] = useState("login");
   const [gamePin, setGamePin] = useState("");
-  const [playerName, setPlayerName] = useState("");
+  const [playerCount, setPlayerCount] = useState(0);
+  const [lobbyNames, setLobbyNames] = useState([]);
+  const [userName, setUserName] = useState('');
+  useEffect(() => {
+    socket.connect();
+    /*
+      socket.on listens for events. here we are 
+      listening for when the socket connects to the server 
+    */
+    socket.on('connect', () => { 
+      console.log('Connected:', socket.id);
+    });
 
+    socket.on('player-count', (count) => {
+      setPlayerCount(count);
+    })
+    socket.on('lobby-names', (name) => {
+      console.log('lobby_names:', name)
+      setLobbyNames(name);
+    })
+    return () => {
+      socket.disconnect();  
+    };
+  }, [])
   // Fetch questions when entering the game screen
   useEffect(() => {
     if (screen === "game" && !questions) {
@@ -34,8 +57,9 @@ function App() {
       <Login
         onJoin={(pin, name) => {
           setGamePin(pin);
-          setPlayerName(name);
           setScreen("lobby");
+          socket.emit("join-game", pin, name)
+          setUserName(name)
         }}
         onStartGame={() => setScreen("startGame")}
       />
@@ -45,7 +69,6 @@ function App() {
       <StartGame
         onHostJoin={(pin, name) => {
           setGamePin(pin);
-          setPlayerName(name);
           setScreen("lobby");
         }}
         onBack={() => setScreen("login")}
@@ -55,8 +78,10 @@ function App() {
     {screen === "lobby" && (
       <Lobby
         pin={gamePin}
-        name={playerName}
+        lobbyNames={lobbyNames}
         onStart={() => setScreen("game")}
+        playerCount={playerCount}
+        userName={userName}
       />
     )}
       {screen === "game" && (

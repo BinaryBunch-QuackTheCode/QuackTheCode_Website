@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
+import socket from "../../services/socket";
 
-function Lobby({ pin, name, onStart }) {
+function Lobby({ pin, userName, lobbyNames, onStart, playerCount = 1}) {
   const [dots, setDots] = useState("");
-  const playerCount = 1; // placeholder for now
-
+  
   // Waiting animation: "", ".", "..", "..."
   useEffect(() => {
     const interval = setInterval(() => {
@@ -35,11 +35,11 @@ function Lobby({ pin, name, onStart }) {
 
       {/* Middle: Player info */}
       <div className="flex flex-col items-center justify-center flex-1 gap-4">
-        <h1 className="text-5xl font-bold">{name}</h1>
+        <h1 className="text-5xl font-bold">{userName}</h1>
         <p className="text-lg opacity-80">
           Players joined: {playerCount}
         </p>
-
+        {lobbyNames.filter(({id} = playerName) => id !== socket.id).map(({name} = playerName, index) => (<p key={index}>{name}</p>))}
         {/* Waiting animation */}
         <p className="text-2xl font-mono h-8">
           Waiting{dots}

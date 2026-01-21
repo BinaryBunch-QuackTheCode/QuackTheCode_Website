@@ -1,6 +1,7 @@
 import Editor from '@monaco-editor/react';
 import React, { useRef } from 'react';
 import axios from 'axios';
+import socket from '../../services/socket';
 
 function CodeEditor(){
     const editorRef = useRef(null);

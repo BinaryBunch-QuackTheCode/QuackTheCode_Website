@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import "./StartGame.css";
+import socket from '../../services/socket';
 
 function StartGame({ onHostJoin, onBack }) {
   const [pin, setPin] = useState("");
