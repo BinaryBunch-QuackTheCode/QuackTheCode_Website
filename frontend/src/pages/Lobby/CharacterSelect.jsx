@@ -7,7 +7,7 @@ export default function CharacterSelect({
   selections = {},     // { [playerId]: slotIndex }
   myId,
   onPick,
-  slotCount = 16,
+  slotCount = 8,
 }) {
   const slots = useMemo(() => Array.from({ length: slotCount }, (_, i) => i), [slotCount]);
 
