@@ -33,7 +33,15 @@ function Lobby({ pin, userName, lobbyNames, onStart, playerCount = 1 }) {
   }, [onStart]);
 
   return (
-    <div className="h-screen w-screen flex flex-col justify-between bg-yellow-800 text-white px-6 py-4">
+  <div className="relative min-h-[100dvh] w-full text-white">
+    {/* Animated background */}
+    <div className="absolute inset-0 z-0 bg-animated" />
+    {/* Noise overlay */}
+    <div className="absolute inset-0 z-10 bg-noise opacity-20 mix-blend-overlay pointer-events-none" />
+    <div className="absolute inset-0 z-20 bg-pixels opacity-35 pointer-events-none" />
+
+    {/* All Lobby content */}
+    <div className="relative z-30 min-h-[100dvh] w-full flex flex-col justify-between px-6 py-4">
       {/* Left hover/click drawer for players */}
       <div
         className="fixed left-0 top-0 h-full z-50 group"
@@ -128,6 +136,7 @@ function Lobby({ pin, userName, lobbyNames, onStart, playerCount = 1 }) {
             Choose Your Quacker!
           </div>
         </div>
+
         <div className="w-full max-w-4xl">
           <CharacterSelect
             lobbyNames={lobbyNames}
@@ -153,7 +162,8 @@ function Lobby({ pin, userName, lobbyNames, onStart, playerCount = 1 }) {
         </button>
       </div>
     </div>
-  );
+  </div>
+);
 }
 
 export default Lobby;
