@@ -41,3 +41,11 @@
 .login-button:hover {
   background-color: #ffdb4d;
 }
+
+.music-toggle {
+  color: white;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

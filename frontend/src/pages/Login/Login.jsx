@@ -7,7 +7,8 @@ function Login({ onJoin, onStartGame }) {
   /*store name*/
   const [name, setName] = useState("");
   const [step, setStep] = useState("pin");
-  
+  const [musicEnabled, setMusicEnabled] = useState(true);
+
   const handleSubmit = (e) => {
       e.preventDefault();
       if (step === "pin") {
@@ -44,6 +45,15 @@ function Login({ onJoin, onStartGame }) {
             maxLength={20}
           />
         )}
+         <label className="music-toggle">
+          <input
+            type="checkbox"
+            checked={musicEnabled}
+            onChange={(e) => setMusicEnabled(e.target.checked)}
+          />
+          <span style={{ marginLeft: 8 }}>Music</span>
+        </label>
+        
         <button type="submit" className="login-button">
           {step === "pin" ? "Enter PIN" : "Join Game"}
         </button>
