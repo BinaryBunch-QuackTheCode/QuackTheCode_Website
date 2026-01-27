@@ -85,7 +85,7 @@ io.on('connection', async (socket) => { //runs everytime a client connects to th
     console.log('Received code submission, sending to executor...');
     requestCodeExecution(executor, {
       player_id: 1,
-      game_id: 0, 
+      game_id: socket.pin, 
       user_code: code, 
       inputs_code: [""],
       test_code: "",
@@ -111,7 +111,6 @@ io.on('connection', async (socket) => { //runs everytime a client connects to th
 
 })
 
-
 app.use(express.json());
 app.use(cors());
 
@@ -121,7 +120,6 @@ app.use(express.static(path.join(__dirname, '../frontend/dist')));
 app.get('/get_questions', (req, res) => {
   res.json(leetcodeQuestion[Math.floor(Math.random() * leetcodeQuestion.length)]);
 });
-
 
 // Catch-all: serve React app for any other routes (must be LAST)
 app.get('/{*splat}', (req, res) => {
