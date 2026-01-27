@@ -60,7 +60,7 @@ io.on('connection', async (socket) => { //runs everytime a client connects to th
   });
   socket.on('user-submission', (code) => {
     console.log('Received code submission, sending to executor...');
-    requestCodeExecution(executor, code);
+    requestCodeExecution(executor, {game_id: 0, player_id: socket.id, user_code: code, test_code: '', input_codes: ['']});
   })
   socket.on('disconnect', (reason) => {
     console.log(`${socket.id} because of: ${reason}`);
@@ -81,9 +81,6 @@ io.on('connection', async (socket) => { //runs everytime a client connects to th
 
 })
 
-// Use Unix socket on Linux, TCP on Windows
-const isWindows = process.platform === 'win32';
-const EXECUTOR_PATH = isWindows ? { host: 'localhost', port: 3001 } : { path: '/tmp/executor.sock' };
 
 app.use(express.json());
 app.use(cors());
