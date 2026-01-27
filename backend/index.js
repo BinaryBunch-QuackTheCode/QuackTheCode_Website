@@ -60,7 +60,7 @@ io.on('connection', async (socket) => { //runs everytime a client connects to th
   });
   socket.on('user-submission', (code) => {
     console.log('Received code submission, sending to executor...');
-    requestCodeExecution(executor, {game_id: 0, player_id: socket.id, user_code: code, test_code: '', input_codes: ['']});
+    requestCodeExecution(executor, {game_id: 0, player_id: socket.id, user_code: code, test_code: '', inputs_code: ['']});
   })
   socket.on('disconnect', (reason) => {
     console.log(`${socket.id} because of: ${reason}`);
