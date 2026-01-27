@@ -5,7 +5,7 @@ import { Server } from 'socket.io';
 import { createServer } from 'http';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { count } from 'console';
+import net from 'net';
 import { setExecutorOnMessage, requestCodeExecution } from './executor-comms.js';
 
 

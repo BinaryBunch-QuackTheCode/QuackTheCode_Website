@@ -1,6 +1,3 @@
-import net from 'net';
-import fs from 'node:fs';
-
 const setExecutorOnMessage = (executor, onMessage) => { 
     let buffer = '';
 
@@ -28,27 +25,5 @@ const requestCodeExecution = (executor, message) => {
     const payload = JSON.stringify(message) + '\n';
     executor.write(payload);
 }
-
-setExecutorOnMessage(executor, (message) => console.log(message));
-
-if (process.argv.length < 3) { 
-    console.error("Usage: node example.js <python script to run>")
-    process.exit(1);
-}
-
-fs.readFile(process.argv[2], 'utf8', (err, data) => {
-    if (err) {
-        console.error(err);
-        return;
-    }
-    requestCodeExecution(executor, {
-        game_id: 1, 
-        player_id: 2, 
-        user_code: data, 
-        test_code: "", 
-        inputs_code: [""]
-    });
-
-});
 
 export { setExecutorOnMessage, requestCodeExecution };
