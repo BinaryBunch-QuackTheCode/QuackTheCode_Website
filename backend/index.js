@@ -28,6 +28,12 @@ const PORT = 3000;
 */
 const executor = net.createConnection('/tmp/executor.sock');
 
+// Set up the message handler ONCE at startup
+setExecutorOnMessage(executor, (message) => {
+    console.log('Received from executor:', message);
+    // TODO: send result back to the right client
+});
+
 executor.on('end', () => {
     console.log('Disconnected from executor');
 });
@@ -53,8 +59,8 @@ io.on('connection', async (socket) => { //runs everytime a client connects to th
     io.to(pin).emit('lobby-names', rooms[pin]);
   });
   socket.on('user-submission', (code) => {
-    requestCodeExecution(executor, code)
-    setExecutorOnMessage(executor, (message) => console.log(message));
+    console.log('Received code submission, sending to executor...');
+    requestCodeExecution(executor, code);
   })
   socket.on('disconnect', (reason) => {
     console.log(`${socket.id} because of: ${reason}`);

@@ -17,7 +17,7 @@ const setExecutorOnMessage = (executor, onMessage) => {
             buffer = buffer.slice(idx + 1);
             if (!line) continue;
         }
-        executor.end()
+        // Don't close the connection - keep it open for more messages
     });
 }
 
