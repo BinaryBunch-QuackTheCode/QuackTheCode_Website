@@ -14,6 +14,7 @@ function App() {
   const [playerCount, setPlayerCount] = useState(0);
   const [lobbyNames, setLobbyNames] = useState([]);
   const [userName, setUserName] = useState('');
+  const [musicEnabled, setMusicEnabled] = useState(true);
   useEffect(() => {
     socket.connect();
     /*
@@ -55,13 +56,17 @@ function App() {
     <div>
       {screen === "login" && (
       <Login
-        onJoin={(pin, name) => {
+        onJoin={(pin, name, musicOn) => {
+          setMusicEnabled(musicOn);
           setGamePin(pin);
           setScreen("lobby");
           socket.emit("join-game", pin, name);
           setUserName(name);
         }}
-        onStartGame={() => {setScreen("startGame")}}
+        onStartGame={(musicOn) => {
+          setMusicEnabled(musicOn);
+          setScreen("startGame");
+        }}
       />
     )}
 
@@ -81,9 +86,10 @@ function App() {
       <Lobby
         pin={gamePin}
         lobbyNames={lobbyNames}
-        onStart={() => setScreen("game")}
+        onStart={() => {setScreen("game")}}
         playerCount={playerCount}
         userName={userName}
+        musicEnabled={musicEnabled}
       />
     )}
       {screen === "game" && (

@@ -2,9 +2,13 @@ import { useEffect, useState } from "react";
 import socket from "../../services/socket";
 import CharacterSelect from "./CharacterSelect";
 
-function Lobby({ pin, userName, lobbyNames, onStart, playerCount = 1 }) {
-  const [dots, setDots] = useState("");
+import useLoopingAudio from "../../hooks/useLoopingAudio";
+import lobbyMusic from "../../assets/audio/Lobby_x1.mp3";
 
+function Lobby({ pin, userName, lobbyNames, onStart, playerCount = 1, musicEnabled = true}) {
+  const [dots, setDots] = useState("");
+  const { blocked, enable } = useLoopingAudio(lobbyMusic, musicEnabled, { volume: 0.35 });
+  console.log("Lobby: musicEnabled =", musicEnabled, "blocked =", blocked);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [selections, setSelections] = useState({});
   const myId = socket.id;
@@ -34,6 +38,15 @@ function Lobby({ pin, userName, lobbyNames, onStart, playerCount = 1 }) {
 
   return (
   <div className="relative min-h-[100dvh] w-full text-white">
+    {blocked && musicEnabled && (
+      <button
+        onClick={enable}
+        className="fixed top-4 right-4 z-[999] px-4 py-2 rounded-md bg-white/20 border border-white/30 backdrop-blur-md"
+      >
+        Enable Music 🔊
+      </button>
+    )}
+    
     {/* Animated background */}
     <div className="absolute inset-0 z-0 bg-animated" />
     {/* Noise overlay */}
