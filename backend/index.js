@@ -5,8 +5,9 @@ import { Server } from 'socket.io';
 import { createServer } from 'http';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import net from 'net';
 import { count } from 'console';
+import { setExecutorOnMessage, requestCodeExecution } from './executor-comms.js';
+
 
 // Create __dirname for ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -25,6 +26,15 @@ const PORT = 3000;
   IO: The whole server (all connected clients)
   Socket: The current client
 */
+const executor = net.createConnection('/tmp/executor.sock');
+
+executor.on('end', () => {
+    console.log('Disconnected from executor');
+});
+
+executor.on('error', (err) => {
+    console.error('Socket error:', err.message);
+});
 
 const rooms = {}
 io.on('connection', async (socket) => { //runs everytime a client connects to the server and gives a socket instance to them
@@ -42,7 +52,10 @@ io.on('connection', async (socket) => { //runs everytime a client connects to th
     io.to(pin).emit('player-count', playerCount);
     io.to(pin).emit('lobby-names', rooms[pin]);
   });
-
+  socket.on('user-submission', (code) => {
+    requestCodeExecution(executor, code)
+    setExecutorOnMessage(executor, (message) => console.log(message));
+  })
   socket.on('disconnect', (reason) => {
     console.log(`${socket.id} because of: ${reason}`);
     const pin = socket.pin;
@@ -71,40 +84,6 @@ app.use(cors());
 
 // Serve frontend static files
 app.use(express.static(path.join(__dirname, '../frontend/dist')));
-
-// API routes
-app.post('/submit', (req, res) => {
-  const { code } = req.body;
-  console.log(code);
-  const client = net.createConnection(EXECUTOR_PATH, () => { //runs after connection succeeds
-    console.log('Connected to the C++ Executor!');
-    const message = {
-      player_id: 1,
-      user_code: code,
-      test_code: ""
-    };
-    const payload = JSON.stringify(message) + '\n';
-    /* 
-    sends the JSON through the socket and 
-    prints "Payload sent " after the JSON is sent 
-    */
-    client.write(payload, () => {
-      console.log('Payload sent');
-    });
-  })
-
-  client.on('end', () => {
-    console.log('Disconnected from server');
-  });
-
-  client.on('error', (err) => {
-    console.log(err);  // Check what this is
-    console.log(typeof err);  // Check type
-    console.log(err.message);  // Might be undefined
-  });
-
-  res.json({ message: 'Hello from the backend!' });
-});
 
 app.get('/get_questions', (req, res) => {
   res.json(leetcodeQuestion[Math.floor(Math.random() * leetcodeQuestion.length)]);

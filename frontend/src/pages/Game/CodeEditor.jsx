@@ -8,13 +8,9 @@ function CodeEditor() {
     function handleEditorDidMount(editor, monaco) {
         editorRef.current = editor;
     }
-    async function runCode() {
-        try {
-            const response = await axios.post('/submit', { code: editorRef.current.getValue() });
-            console.log(response.data.message);
-        } catch (e) {
-            console.log(`Error: ${e}`);
-        }
+    function runCode() {
+        const code = editorRef.current.getValue();
+        socket.emit('user-submission', code);      
     }
     return (
         <div>
