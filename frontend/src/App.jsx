@@ -6,6 +6,8 @@ import StartGame from "./pages/StartGame/StartGame";
 import CodeEditor from './pages/Game/CodeEditor';
 import LeetQuestion from './pages/Game/LeetQuestion';
 import socket from './services/socket';
+import Scoreboard from "./pages/Scoreboard/Scoreboard";
+import Podium from "./pages/Podium/Podium";
 
 function App() {
   const [questions, setQuestions] = useState(null);
@@ -15,6 +17,9 @@ function App() {
   const [lobbyNames, setLobbyNames] = useState([]);
   const [userName, setUserName] = useState('');
   const [musicEnabled, setMusicEnabled] = useState(true);
+  const [teams, setTeams] = useState([
+    { id: "me", name: userName || "Team 1", score: 0 }, 
+  ]);
   useEffect(() => {
     socket.connect();
     /*
@@ -54,6 +59,24 @@ function App() {
 
   return (
     <div>
+
+      {import.meta.env.DEV && (
+        <div
+          style={{
+            position: "fixed",
+            top: 10,
+            right: 10,
+            display: "flex",
+            gap: "8px",
+            zIndex: 9999,
+          }}
+        >
+          <button onClick={() => setScreen("game")}>Game</button>
+          <button onClick={() => setScreen("scoreboard")}>Scoreboard</button>
+          <button onClick={() => setScreen("podium")}>Podium</button>
+        </div>
+      )}
+
       {screen === "login" && (
       <Login
         onJoin={(pin, name, musicOn) => {
@@ -102,6 +125,21 @@ function App() {
           <div>Loading problem...</div>
         )
       )}
+      
+     {screen === "scoreboard" && (
+       <Scoreboard
+         teams={teams}
+         onNext={() => setScreen("game")}
+         onEnd={() => setScreen("podium")}
+       />
+     )}
+
+     {screen === "podium" && (
+       <Podium
+         teams={teams}
+         onBackToLobby={() => setScreen("lobby")}
+       />
+     )}
     </div>
   );
 }
