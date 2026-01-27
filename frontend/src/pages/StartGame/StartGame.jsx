@@ -8,8 +8,9 @@ function StartGame({ onHostJoin, onBack }) {
   const [starting, setStarting] = useState(false);
 
   useEffect(() => {
-    const newPin = Math.floor(100000 + Math.random() * 900000).toString();
-    setPin(newPin);
+    socket.emit('create-game', (uniquePin) => {
+      setPin(uniquePin);
+    });
   }, []);
 
   async function handleStartGame(e) {

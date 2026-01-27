@@ -58,10 +58,10 @@ function App() {
         onJoin={(pin, name) => {
           setGamePin(pin);
           setScreen("lobby");
-          socket.emit("join-game", pin, name)
-          setUserName(name)
+          socket.emit("join-game", pin, name);
+          setUserName(name);
         }}
-        onStartGame={() => setScreen("startGame")}
+        onStartGame={() => {setScreen("startGame")}}
       />
     )}
 
@@ -69,6 +69,8 @@ function App() {
       <StartGame
         onHostJoin={(pin, name) => {
           setGamePin(pin);
+          setUserName(name);
+          socket.emit("join-game", pin, name);
           setScreen("lobby");
         }}
         onBack={() => setScreen("login")}

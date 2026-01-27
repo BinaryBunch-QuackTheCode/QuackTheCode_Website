@@ -30,21 +30,43 @@ const executor = net.createConnection('/tmp/executor.sock');
 
 // Set up the message handler ONCE at startup
 setExecutorOnMessage(executor, (message) => {
-    console.log('Received from executor:', message);
-    // TODO: send result back to the right client
+  console.log('Received from executor:', message);
+  // TODO: send result back to the right client
 });
 
 executor.on('end', () => {
-    console.log('Disconnected from executor');
+  console.log('Disconnected from executor');
 });
 
 executor.on('error', (err) => {
-    console.error('Socket error:', err.message);
+  console.error('Socket error:', err.message);
 });
 
 const rooms = {}
+
+// Generate a unique 6-digit PIN
+function generateUniquePin() {
+  let pin;
+  do {
+    pin = Math.floor(100000 + Math.random() * 900000).toString();
+  } while (rooms[pin]); // Keep generating until we find an unused PIN
+  return pin;
+}
+
 io.on('connection', async (socket) => { //runs everytime a client connects to the server and gives a socket instance to them
   console.log('User Connected:', socket.id); //users get given a random id when they get connect
+  // Host requests a new unique game PIN
+  socket.on('create-game', (callback) => {
+    const pin = generateUniquePin();
+    rooms[pin] = [];  // Reserve it immediately
+    console.log('Created new game with PIN:', pin);
+    callback(pin);  // Send PIN back to the host that requested it
+  });
+  socket.on('check-pin', (candidatePin, callback) => {
+    const isValid = candidatePin in rooms; 
+    console.log(`Socket ${socket.id} inputted a ${isValid} pin`)
+    callback(isValid);
+  })
   socket.on('join-game', (pin, name) => {
     socket.join(pin);
     const room = io.sockets.adapter.rooms.get(pin)
@@ -58,16 +80,18 @@ io.on('connection', async (socket) => { //runs everytime a client connects to th
     io.to(pin).emit('player-count', playerCount);
     io.to(pin).emit('lobby-names', rooms[pin]);
   });
+
   socket.on('user-submission', (code) => {
     console.log('Received code submission, sending to executor...');
     requestCodeExecution(executor, {
-      game_id: 1, 
-      player_id: 1, 
-      user_code: code, 
-      test_code: "", 
+      game_id: pin,
+      player_id: 1,
+      user_code: code,
+      test_code: "",
       inputs_code: [""]
-  });
+    });
   })
+
   socket.on('disconnect', (reason) => {
     console.log(`${socket.id} because of: ${reason}`);
     const pin = socket.pin;
@@ -80,7 +104,7 @@ io.on('connection', async (socket) => { //runs everytime a client connects to th
     const playerCount = room_len ? room_len.size : 0;
     io.to(pin).emit('player-count', playerCount)
     io.to(pin).emit('lobby-names', rooms[pin]);
-    if(rooms[pin].length === 0){
+    if (rooms[pin].length === 0) {
       delete rooms[pin]
     }
   })
