@@ -13,7 +13,8 @@ function CodeEditor() {
     function runCode() {
         const code = editorRef.current.getValue();
         socket.emit('user-submission', code, (res) => {
-            setStdErr(res.result[0].stdErr);
+            setStdErr(res.result[0].stderr);
+            setStdOut(res.result[0].stdOut);
         });      
     }
     return (
@@ -29,7 +30,10 @@ function CodeEditor() {
                 />
                 <div className='absolute h-[40vh] w-[45vw] bg-green-500 left-0 bottom-0'>
                     <p>
-                        {stdErr}
+                        strErr: {stdErr}
+                    </p>
+                    <p>
+                        strOut: {stdOut}
                     </p>
                 </div>
             </div>
