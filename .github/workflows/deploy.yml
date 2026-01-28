@@ -33,4 +33,4 @@ jobs:
             
             # Restart the server
             cd ../backend
-            pm2 restart quackthecode || pm2 start index.js --name "quackthecode"
+            sudo pm2 restart quackthecode || sudo pm2 start index.js --name "quackthecode"
