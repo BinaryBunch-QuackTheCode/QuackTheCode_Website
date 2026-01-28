@@ -15,10 +15,12 @@ function CodeEditor() {
         socket.emit('user-submission', code, (res) => {
             console.log(res)
             if(res.status === "ERROR"){
+                console.log('here')
                 setStdErr(res.message || 'Unknown error');
             }else{
+                console.log('does this even work ', res.results[0].stderr)
                 setStdErr(res.results?.[0].stderr);
-                setStdOut(res.results?.[0].stdOut);
+                setStdOut(res.results?.[0].stdout);
             }   
         });      
     }
