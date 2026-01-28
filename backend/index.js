@@ -28,10 +28,18 @@ const PORT = 3000;
 */
 const executor = net.createConnection('/tmp/executor.sock');
 
-// Set up the message handler ONCE at startup
+// Track pending callbacks: player_id -> callback function
+const pendingCallbacks = new Map();
+// Set up the message handler once at startup so its always listening
 setExecutorOnMessage(executor, (message) => {
   console.log('Received from executor:', message);
-  // TODO: send result back to the right client
+  
+  // Find the callback for this player and call it
+  const callback = pendingCallbacks.get(message.player_id);
+  if (callback) {
+    callback(message);
+    pendingCallbacks.delete(message.player_id);  // Clean up
+  }
 });
 
 executor.on('end', () => {
@@ -82,17 +90,16 @@ io.on('connection', async (socket) => { //runs everytime a client connects to th
   });
 
   socket.on('user-submission', (code, callback) => {
-    console.log(`Received code submission from ${socket.id} in room ${socket.pin}, sending to executor...`);
+    console.log(`Received code submission from ${socket.id} (player ${playerId}) in room ${socket.pin}, sending to executor...`);
+    // Store callback so we can call it when executor responds
+    pendingCallbacks.set(socket.id, callback);
     requestCodeExecution(executor, {
       player_id: socket.id,
-      game_id: Number(socket.pin), 
+      game_id: Number(socket.pin) || 1, 
       user_code: code, 
       inputs_code: [""],
       test_code: "",
     });
-    setExecutorOnMessage(executor, (message) => {
-      callback(message); 
-    })
   })
 
   socket.on('disconnect', (reason) => {
