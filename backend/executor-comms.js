@@ -3,7 +3,6 @@ const setExecutorOnMessage = (executor, onMessage) => {
 
     executor.on('data', (chunk) => {
         buffer += chunk.toString();
-
         while (true) {
             const idx = buffer.indexOf('\n');
             if (idx === -1) break;

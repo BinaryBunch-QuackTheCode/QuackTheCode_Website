@@ -1,27 +1,38 @@
 import Editor from '@monaco-editor/react';
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import axios from 'axios';
 import socket from '../../services/socket';
 
 function CodeEditor() {
+    const [stdOut, setStdOut] = useState('');
+    const [stdErr, setStdErr] = useState('');
     const editorRef = useRef(null);
     function handleEditorDidMount(editor, monaco) {
         editorRef.current = editor;
     }
     function runCode() {
         const code = editorRef.current.getValue();
-        socket.emit('user-submission', code);      
+        socket.emit('user-submission', code, (res) => {
+            setStdErr(res.result[0].stdErr);
+        });      
     }
     return (
         <div>
-            <Editor
-                height="90vh"
-                defaultLanguage="python"
-                onMount={handleEditorDidMount}
-                backgroundColor='dark'
-                theme="vs-dark"
-                width="50vw"
-            />
+            <div className='relative'>
+                <Editor
+                    height="90vh"
+                    defaultLanguage="python"
+                    onMount={handleEditorDidMount}
+                    backgroundColor='dark'
+                    theme="vs-dark"
+                    width="50vw"
+                />
+                <div className='absolute h-[40vh] w-[45vw] bg-green-500 left-0 bottom-0'>
+                    <p>
+                        {stdErr}
+                    </p>
+                </div>
+            </div>
             <div className='bg-black flex justify-end gap-5'>
                 <button onClick={runCode} className='border-2 px-2 rounded-md bg-gray-400 cursor-pointer active:scale-90 
                 transition-transform duration-75'>

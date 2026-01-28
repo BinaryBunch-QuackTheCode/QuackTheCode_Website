@@ -90,6 +90,9 @@ io.on('connection', async (socket) => { //runs everytime a client connects to th
       inputs_code: [""],
       test_code: "",
     });
+    setExecutorOnMessage(executor, (message) => {
+      callback(message); 
+    })
   })
 
   socket.on('disconnect', (reason) => {
