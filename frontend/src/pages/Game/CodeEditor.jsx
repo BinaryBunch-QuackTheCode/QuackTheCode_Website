@@ -13,8 +13,12 @@ function CodeEditor() {
     function runCode() {
         const code = editorRef.current.getValue();
         socket.emit('user-submission', code, (res) => {
-            setStdErr(res.result[0].stderr);
-            setStdOut(res.result[0].stdOut);
+            if(res.status === "ERROR"){
+                setStdErr(res.message || 'Unknown error');
+            }else{
+                setStdErr(res.results[0].stderr);
+                setStdOut(res.results[0].stdOut);
+            }   
         });      
     }
     return (
