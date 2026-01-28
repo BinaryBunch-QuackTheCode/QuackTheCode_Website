@@ -81,7 +81,7 @@ io.on('connection', async (socket) => { //runs everytime a client connects to th
     io.to(pin).emit('lobby-names', rooms[pin]);
   });
 
-  socket.on('user-submission', (code) => {
+  socket.on('user-submission', (code, callback) => {
     console.log(`Received code submission from ${socket.id} in room ${socket.pin}, sending to executor...`);
     requestCodeExecution(executor, {
       player_id: socket.id,
