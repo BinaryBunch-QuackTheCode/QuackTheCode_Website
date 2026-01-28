@@ -90,7 +90,7 @@ io.on('connection', async (socket) => { //runs everytime a client connects to th
   });
 
   socket.on('user-submission', (code, callback) => {
-    console.log(`Received code submission from ${socket.id} (player ${playerId}) in room ${socket.pin}, sending to executor...`);
+    console.log(`Received code submission from ${socket.id} in room ${socket.pin}, sending to executor...`);
     // Store callback so we can call it when executor responds
     pendingCallbacks.set(socket.id, callback);
     requestCodeExecution(executor, {
