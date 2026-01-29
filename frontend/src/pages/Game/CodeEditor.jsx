@@ -35,12 +35,12 @@ function CodeEditor() {
                     theme="vs-dark"
                     width="50vw"
                 />
-                <div className='resize-y absolute h-[40vh] w-[45vw] bg-green-500 left-0 bottom-0'>
+                <div className='resize-y overflow-y-scroll absolute h-[40vh] w-[45vw] bg-green-500 left-0 bottom-0'>
                     <p>
-                        strErr: {stdErr}
+                        stdErr: {stdErr}
                     </p>
                     <p>
-                        strOut: {stdOut}
+                        stdOut: {stdOut}
                     </p>
                 </div>
             </div>
