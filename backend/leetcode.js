@@ -14,7 +14,33 @@ export const leetcodeQuestion = [
         title: 'Valid Anagram',
         example: [{input: 's = "racecar", t = "carrace', output: 'Output: [0,2]'}, {input: 'Input: s = "jar", t = "jam', output: 'Output: false'}],
         id: 242,
-        difficulty: 'Easy',
+        difficulty: 'Easy', 
+        inputs: [
+            'input = ("anagram", "nagaram")\nexpected = True',
+            'input = ("rat", "car")\nexpected = False',
+            'input = ("listen", "silent")\nexpected = True',
+            'input = ("hello", "world")\nexpected = False',
+            'input = ("a", "a")\nexpected = True',
+            'input = ("ab", "ba")\nexpected = True',
+            'input = ("aabbcc", "abcabc")\nexpected = True',
+            'input = ("", "")\nexpected = True',
+            'input = ("a", "ab")\nexpected = False',
+            'input = ("cinema", "iceman")\nexpected = True'
+        ],
+        testCode: `
+import sys
+
+for i, test_case in enumerate(inputs):
+    exec(test_case)
+    s, t = input
+    result = isAnagram(s, t)
+    if result != expected:
+        print(f"Test {i+1} FAILED: isAnagram({repr(s)}, {repr(t)}) returned {result}, expected {expected}")
+        sys.exit(1)
+
+print("All tests passed!")
+sys.exit(0)
+`,
     },
 ]
 
