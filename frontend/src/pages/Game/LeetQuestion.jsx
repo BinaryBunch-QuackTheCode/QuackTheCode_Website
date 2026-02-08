@@ -4,8 +4,8 @@ import axios from "axios";
 function LeetQuestion({ LeetInfo }) {
   const { title, question, example, difficulty } = LeetInfo
   return (
-    <div className="max-h-[100vh] w-[100vw] p-2 md:p-3 text-sm md:text-lg xl:w-[50vw] overflow-y-auto">
-      <h1 className='font-bold text-lg'>
+    <div className="max-h-[100vh] w-[100vw] p-2 md:p-3 text-sm md:text-lg xl:w-[50vw] overflow-y-auto bg-[#F0E8D0]">
+      <h1 className='font-bold text-lg font-["Press_Start_2P"]'>
         {title}
       </h1>
       <p className={`bg-[#3f3f3f] w-fit p-2 ${(difficulty === 'Easy') ? 'text-green-500' : 'text-white'} font-medium rounded-sm my-2 text-sm`}>
@@ -19,7 +19,12 @@ function LeetQuestion({ LeetInfo }) {
       {example.map((ex, idx) =>
       <div>
         <p className="font-bold">Example #{idx + 1}</p>
-        <div className="bg-[#191919] text-white rounded-sm p-4 mx-auto my-2">
+        <div class="bg-[#D4874B] border-4 border-[#5C3A1F] 
+            shadow-[4px_4px_0px_0px_#5C3A1F]
+            hover:translate-x-[2px] hover:translate-y-[2px]
+            hover:shadow-[2px_2px_0px_0px_#5C3A1F]
+            px-6 py-3 font-['Press_Start_2P'] text-[#3D2614]
+            cursor-pointer transition-all text-sm m-4">
           <p>
             {ex.input}
           </p>
