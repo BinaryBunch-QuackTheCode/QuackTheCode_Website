@@ -106,9 +106,9 @@ io.on('connection', async (socket) => { //runs everytime a client connects to th
   socket.on('start-game', (pin) => {
     rooms[pin].forEach((obj) => {
       if(obj.id === socket.id && obj.role === 'host')
-        io.to(pin).emit('set-page', {screen: 'preview'});
+        io.to(pin).emit('set-page', {screen: 'preview'}); //question preview
         setTimeout(() => {
-          io.to(pin).emit('set-page', {screen: 'game'});
+          io.to(pin).emit('set-page', {screen: 'game'}); //after set amount of time show editor
         }, 5000);
       })
   })
