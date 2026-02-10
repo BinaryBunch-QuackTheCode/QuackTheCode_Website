@@ -103,6 +103,16 @@ io.on('connection', async (socket) => { //runs everytime a client connects to th
     console.log('Rooms: ', rooms)
   });
 
+  socket.on('start-game', (pin) => {
+    rooms[pin].forEach((obj) => {
+      if(obj.id === socket.id && obj.role === 'host')
+        io.to(pin).emit('set-page', {screen: 'preview'});
+        setTimeout(() => {
+          io.to(pin).emit('set-page', {screen: 'game'});
+        }, 5000);
+      })
+  })
+
   socket.on('user-submission', (code, callback) => {
     console.log(`Received code submission from ${socket.id} in room ${socket.pin}, sending to executor...`);
     // Store callback so we can call it when executor responds
@@ -132,13 +142,6 @@ io.on('connection', async (socket) => { //runs everytime a client connects to th
       delete rooms[pin]
     }
   })
-
-  socket.on('start-game', (pin) => {
-    rooms[pin].forEach((obj) => {
-      if(obj.id === socket.id && obj.role === 'host')
-        io.to(pin).emit('set-game-page', {screen: 'game'})
-      })
-  })
 })
 
 app.use(express.json());
@@ -147,9 +150,11 @@ app.use(cors());
 // Serve frontend static files
 app.use(express.static(path.join(__dirname, '../frontend/dist')));
 
+
 app.get('/get_questions', (req, res) => {
   res.json(leetcodeQuestion[Math.floor(Math.random() * leetcodeQuestion.length)]);
 });
+
 
 // Catch-all: serve React app for any other routes (must be LAST)
 app.get('/{*splat}', (req, res) => {

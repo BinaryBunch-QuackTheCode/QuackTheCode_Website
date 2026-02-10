@@ -59,7 +59,7 @@ function App() {
     }
   }, [screen, questions]);
 
-  socket.on('set-game-page', (obj) => {
+  socket.on('set-page', (obj) => {
     setScreen(obj.screen);
   })
   return (
@@ -97,7 +97,11 @@ function App() {
         }}
       />
     )}
-
+    {screen === "preview" && (
+      <div className='flex justify-center items-center bg-red-500 h-full'>
+        <h1>it worked :D</h1>
+      </div>
+    )}
     {screen === "startGame" && (
       <StartGame
         onHostJoin={(pin, name) => {

@@ -11,7 +11,7 @@ function Login({ onJoin, onStartGame }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (step === "pin") {
-      /* 
+      /*
       When a user types in a pin and enters we send the pin to the backend to verify
       if it is a valid pin. if it is then we will move the name section. if not then we
       clear the pin in the textbox and tell the user the to type in a valid pin
@@ -32,18 +32,17 @@ function Login({ onJoin, onStartGame }) {
   };
 
   return (
-    <div className="login-container">
-      <h1 className="login-title">QuackTheCode</h1>
+    <div className="h-screen flex flex-col justify-center items-center bg-[#f8c129]">
+      <h1 className="text-white text-5xl mb-8 font-['Press_Start_2P']">QuackTheCode</h1>
 
-      <form onSubmit={handleSubmit} className="login-form">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-3 items-center">
         {step === "pin" ? (
           <input
             type="text"
             value={pin}
-            /* how demanding the pin is, all number for letter pin*/
             onChange={(e) => setPin(e.target.value)}
             placeholder="Game PIN"
-            className="pin-input"
+            className="px-3 py-3 text-2xl text-center rounded-none border-4 border-black bg-white w-56 outline-none font-['Press_Start_2P'] text-sm placeholder:text-gray-400 placeholder:text-xs focus:border-green-600 focus:ring-2 focus:ring-green-300"
             maxLength={6}
           />
         ) : (
@@ -52,30 +51,30 @@ function Login({ onJoin, onStartGame }) {
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Enter your name"
-            className="pin-input"
+            className="px-3 py-3 text-2xl text-center rounded-none border-4 border-black bg-white w-56 outline-none font-['Press_Start_2P'] text-sm placeholder:text-gray-400 placeholder:text-xs focus:border-green-600 focus:ring-2 focus:ring-green-300"
             maxLength={20}
           />
         )}
-         <label className="music-toggle">
+        <label className="flex items-center gap-2 text-white font-['Press_Start_2P'] text-xs cursor-pointer">
           <input
             type="checkbox"
             checked={musicEnabled}
             onChange={(e) => setMusicEnabled(e.target.checked)}
+            className="w-4 h-4 accent-green-600"
           />
-          <span style={{ marginLeft: 8 }}>Music</span>
+          <span>Music</span>
         </label>
-        
-        <button type="submit" className="login-button">
+
+        <button type="submit" className="font-['Press_Start_2P'] text-xs px-5 py-3 bg-green-600 text-white border-4 border-black rounded-none cursor-pointer hover:bg-green-700 active:translate-x-0.5 active:translate-y-0.5 w-56 shadow-[4px_4px_0_rgba(0,0,0,0.3)]">
           {step === "pin" ? "Enter PIN" : "Join Game"}
         </button>
       </form>
-      <h1 className="font-bold my-2">
-        OR
-      </h1>
-      {/* Start Game button */}
+
+      <p className="font-['Press_Start_2P'] text-sm text-gray-700 my-3">OR</p>
+
       <button
         type="button"
-        className="login-button"
+        className="font-['Press_Start_2P'] text-xs px-5 py-3 bg-green-600 text-white border-4 border-black rounded-none cursor-pointer hover:bg-green-700 active:translate-x-0.5 active:translate-y-0.5 w-56 shadow-[4px_4px_0_rgba(0,0,0,0.3)]"
         onClick={onStartGame}
       >
         Start a Game
