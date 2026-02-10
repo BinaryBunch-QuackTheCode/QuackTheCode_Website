@@ -5,14 +5,13 @@ import CharacterSelect from "./CharacterSelect";
 import useLoopingAudio from "../../hooks/useLoopingAudio";
 import lobbyMusic from "../../assets/audio/Lobby_x1.mp3";
 
-function Lobby({ pin, userName, lobbyNames, onStart, playerCount = 1, musicEnabled = true}) {
+function Lobby({ pin, userName, lobbyNames, onStart, playerCount = 1, musicEnabled = true, role}) {
   const [dots, setDots] = useState("");
   const { blocked, enable } = useLoopingAudio(lobbyMusic, musicEnabled, { volume: 0.35 });
-  console.log("Lobby: musicEnabled =", musicEnabled, "blocked =", blocked);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [selections, setSelections] = useState({});
   const myId = socket.id;
-
+  console.log(role)
   // keeps teammate line safe + avoids undefined entries
   const playerName = {};
   const safeLobbyNames = (lobbyNames || []).filter(Boolean);
@@ -165,6 +164,7 @@ function Lobby({ pin, userName, lobbyNames, onStart, playerCount = 1, musicEnabl
       </div>
 
       {/* Bottom */}
+      {role === 'host' && (
       <div className="flex justify-center">
         <button
           onClick={onStart}
@@ -174,6 +174,8 @@ function Lobby({ pin, userName, lobbyNames, onStart, playerCount = 1, musicEnabl
           Start Game?
         </button>
       </div>
+      )
+      }
     </div>
   </div>
 );

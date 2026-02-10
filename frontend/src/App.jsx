@@ -20,6 +20,7 @@ function App() {
   const [teams, setTeams] = useState([
     { id: "me", name: userName || "Team 1", score: 0 }, 
   ]);
+  const [role, setRole] = useState('');
   useEffect(() => {
     socket.connect();
     /*
@@ -57,6 +58,9 @@ function App() {
     }
   }, [screen, questions]);
 
+  socket.on('set-game-page', (obj) => {
+    setScreen(obj.screen);
+  })
   return (
     <div>
 
@@ -101,7 +105,12 @@ function App() {
           socket.emit("join-game", pin, name);
           setScreen("lobby");
         }}
-        onBack={() => setScreen("login")}
+        onBack={() => {
+          setScreen("login");
+          socket.emit("disconnect");
+          }
+        }
+        getRole={(role) => setRole(role)}
       />
     )} 
 
@@ -109,10 +118,13 @@ function App() {
       <Lobby
         pin={gamePin}
         lobbyNames={lobbyNames}
-        onStart={() => {setScreen("game")}}
+        onStart={() => {
+          socket.emit('start-game', gamePin);
+        }}
         playerCount={playerCount}
         userName={userName}
         musicEnabled={musicEnabled}
+        role={role}
       />
     )}
       {screen === "game" && (

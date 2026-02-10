@@ -2,13 +2,12 @@ import { useEffect, useState } from "react";
 import "./StartGame.css";
 import socket from '../../services/socket';
 
-function StartGame({ onHostJoin, onBack }) {
+function StartGame({ onHostJoin, onBack, getRole }) {
   const [pin, setPin] = useState("");
   const [name, setName] = useState("");
   const [starting, setStarting] = useState(false);
-
   useEffect(() => {
-    socket.emit('create-game', (uniquePin) => {
+    socket.emit('create-pin', (uniquePin) => {
       setPin(uniquePin);
     });
   }, []);
@@ -17,7 +16,9 @@ function StartGame({ onHostJoin, onBack }) {
     e.preventDefault();
     const trimmed = name.trim();
     if (!pin || !trimmed) return;
-
+    socket.emit('create-game', pin, name, (role) => {
+      getRole(role);
+    })
     setStarting(true);
 
     if (onHostJoin) await onHostJoin(pin, trimmed);

@@ -64,17 +64,25 @@ function generateUniquePin() {
 io.on('connection', async (socket) => { //runs everytime a client connects to the server and gives a socket instance to them
   console.log('User Connected:', socket.id); //users get given a random id when they get connect
   // Host requests a new unique game PIN
-  socket.on('create-game', (callback) => {
+
+  socket.on('create-pin', (callback) => {
     const pin = generateUniquePin();
     rooms[pin] = [];  // Reserve it immediately
-    console.log('Created new game with PIN:', pin);
     callback(pin);  // Send PIN back to the host that requested it
   });
+
+  socket.on('create-game', (pin, name, callback) => {
+    rooms[pin].push({ id: socket.id, role: 'host', name});
+    console.log('Created new game with PIN:', pin);
+    callback('host')
+  });
+  
   socket.on('check-pin', (candidatePin, callback) => {
     const isValid = candidatePin in rooms; 
     console.log(`Socket ${socket.id} inputted a ${isValid} pin`)
     callback(isValid);
   })
+
   socket.on('join-game', (pin, name) => {
     socket.join(pin);
     const room = io.sockets.adapter.rooms.get(pin)
@@ -83,7 +91,7 @@ io.on('connection', async (socket) => { //runs everytime a client connects to th
     if (!rooms[pin]) {
       rooms[pin] = [];
     }
-    rooms[pin].push({ id: socket.id, name });
+    rooms[pin].push({ id: socket.id, role: 'player', name});
     socket.pin = pin;
     io.to(pin).emit('player-count', playerCount);
     io.to(pin).emit('lobby-names', rooms[pin]);
@@ -119,6 +127,12 @@ io.on('connection', async (socket) => { //runs everytime a client connects to th
     }
   })
 
+  socket.on('start-game', (pin) => {
+    rooms[pin].forEach((obj) => {
+      if(obj.id === socket.id && obj.role === 'host')
+        io.to(pin).emit('set-game-page', {screen: 'game'})
+      })
+  })
 })
 
 app.use(express.json());
