@@ -13,7 +13,7 @@ function App() {
   const [questions, setQuestions] = useState(null);
   const [screen, setScreen] = useState("login");
   const [gamePin, setGamePin] = useState("");
-  const [playerCount, setPlayerCount] = useState(0);
+  const [playerCount, setPlayerCount] = useState(1);
   const [lobbyNames, setLobbyNames] = useState([]);
   const [userName, setUserName] = useState('');
   const [musicEnabled, setMusicEnabled] = useState(true);
@@ -34,6 +34,7 @@ function App() {
     socket.on('player-count', (count) => {
       setPlayerCount(count);
     })
+    
     socket.on('lobby-names', (name) => {
       console.log('lobby_names:', name)
       setLobbyNames(name);
@@ -102,7 +103,6 @@ function App() {
         onHostJoin={(pin, name) => {
           setGamePin(pin);
           setUserName(name);
-          socket.emit("join-game", pin, name);
           setScreen("lobby");
         }}
         onBack={() => {

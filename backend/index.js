@@ -68,6 +68,7 @@ io.on('connection', async (socket) => { //runs everytime a client connects to th
   socket.on('create-pin', (callback) => {
     const pin = generateUniquePin();
     rooms[pin] = [];  // Reserve it immediately
+    socket.join(pin);
     callback(pin);  // Send PIN back to the host that requested it
   });
 
@@ -75,6 +76,10 @@ io.on('connection', async (socket) => { //runs everytime a client connects to th
     rooms[pin].push({ id: socket.id, role: 'host', name});
     console.log('Created new game with PIN:', pin);
     callback('host')
+    const room = io.sockets.adapter.rooms.get(pin)
+    const playerCount = room ? room.size : 0;
+    io.to(pin).emit('player-count', playerCount);
+    io.to(pin).emit('lobby-names', rooms[pin]);
   });
   
   socket.on('check-pin', (candidatePin, callback) => {
@@ -85,16 +90,17 @@ io.on('connection', async (socket) => { //runs everytime a client connects to th
 
   socket.on('join-game', (pin, name) => {
     socket.join(pin);
-    const room = io.sockets.adapter.rooms.get(pin)
-    const playerCount = room ? room.size : 0;
-    console.log(`${name} joined. Players in room ${pin}: ${playerCount}`);
     if (!rooms[pin]) {
       rooms[pin] = [];
     }
     rooms[pin].push({ id: socket.id, role: 'player', name});
     socket.pin = pin;
+    const room = io.sockets.adapter.rooms.get(pin)
+    const playerCount = room ? room.size : 0;
     io.to(pin).emit('player-count', playerCount);
     io.to(pin).emit('lobby-names', rooms[pin]);
+    console.log(`${name} joined. Players in room ${pin}: ${playerCount}`);
+    console.log('Rooms: ', rooms)
   });
 
   socket.on('user-submission', (code, callback) => {
