@@ -3,44 +3,25 @@ export const leetcodeQuestion = [
         question: 
         'Given an array of integers nums and an integer target, return the indices i and j such that nums[i] + nums[j] == target and i != j. \n\nYou may assume that every input has exactly one pair of indices i and j that satisfy the condition. \n\nReturn the answer with the smaller index first.',
         title: 'Two Sum',
-        example: [{input: 'Input: nums = [3,4,5,6], target = 7', output: 'Output: [0,2]'}, {input: 'Input: nums = [5,5], target = 10', output: 'Output: [0,1]'}, {input: 'Input: nums = [5,5], target = 10', output: 'Output: [0,1]'}],
+        example: [{input: 'Input: nums = [3,4,5,6], target = 7', output: 'Output: [0,1]'}, {input: 'Input: nums = [5,5], target = 10', output: 'Output: [0,1]'}, {input: 'Input: nums = [4,5,6], target = 10', output: 'Output: [0,2]'}],
         id: 1,
         difficulty: 'Easy',
-        company_tags: ['Google', 'Amazon', 'Microsoft', 'Meta', 'Apple', 'Adobe', 'Bloomberg', 'Spotify', 'Goldman Sachs', 'Uber', 'LinkedIn']
+        company_tags: ['Google', 'Amazon', 'Microsoft', 'Meta', 'Apple', 'Adobe', 'Bloomberg', 'Spotify', 'Goldman Sachs', 'Uber', 'LinkedIn'],
+        func_def: 'def twoSum(nums: list[int], target: int) -> list[int]:',
+        test_func:'import sys\nif twoSum(nums, target) != output:\n\tsys.exit(1)\nsys.exit(0)',
+        io: ['nums = [3, 2, 4]\ntarget = 6\noutput = [1, 2]'],
     },
     {
         question: 
         'Given an array of integers nums and an integer target, return the indices i and j such that nums[i] + nums[j] == target and i != j. \n\nYou may assume that every input has exactly one pair of indices i and j that satisfy the condition. \n\nReturn the answer with the smaller index first.',
         title: 'Valid Anagram',
-        example: [{input: 's = "racecar", t = "carrace', output: 'Output: [0,2]'}, {input: 'Input: s = "jar", t = "jam', output: 'Output: false'}],
+        example: [{input: 's = "racecar", t = "carrace', output: 'Output: True'}, {input: 'Input: s = "jar", t = "jam', output: 'Output: False'}],
         id: 242,
         difficulty: 'Easy', 
-        inputs: [
-            'input = ("anagram", "nagaram")\nexpected = True',
-            'input = ("rat", "car")\nexpected = False',
-            'input = ("listen", "silent")\nexpected = True',
-            'input = ("hello", "world")\nexpected = False',
-            'input = ("a", "a")\nexpected = True',
-            'input = ("ab", "ba")\nexpected = True',
-            'input = ("aabbcc", "abcabc")\nexpected = True',
-            'input = ("", "")\nexpected = True',
-            'input = ("a", "ab")\nexpected = False',
-            'input = ("cinema", "iceman")\nexpected = True'
-        ],
-        testCode: `
-import sys
-
-for i, test_case in enumerate(inputs):
-    exec(test_case)
-    s, t = input
-    result = isAnagram(s, t)
-    if result != expected:
-        print(f"Test {i+1} FAILED: isAnagram({repr(s)}, {repr(t)}) returned {result}, expected {expected}")
-        sys.exit(1)
-
-print("All tests passed!")
-sys.exit(0)
-`,
+        company_tags: ['Meta', 'Google', 'Amazon', 'Microsoft', 'Uber', 'Bloomberg'],
+        function_def: 'def isAnagram(s: str, t: str) -> bool:',
+        test_func:'import sys\nif isAnagram(nums, target) != output:\n\tsys.exit(1)\nsys.exit(0)',
+        io: ['s="racecar"\n t="carrace", output = True'],
     },
 ]
 

@@ -61,6 +61,23 @@ function generateUniquePin() {
   return pin;
 }
 
+function gameTimer(minute, pin){
+  /* 
+    Checks if there are still questions left. if none then break. 
+    if there are still questions then go through each question
+  */
+  io.to(pin).emit('set-page', {screen: 'preview'}); //question preview
+  setTimeout(() => {
+    io.to(pin).emit('set-page', {screen: 'game'}); //after set amount of time show editor
+  }, 1000);
+  const now = Date.now();
+  const endTime = now + minute;
+  io.to(pin).emit('get-time', endTime, minute / 1000);
+  setTimeout(() => {
+    gameTimer(minute, pin);
+  }, minute)
+}
+
 io.on('connection', async (socket) => { //runs everytime a client connects to the server and gives a socket instance to them
   console.log('User Connected:', socket.id); //users get given a random id when they get connect
   // Host requests a new unique game PIN
@@ -112,10 +129,7 @@ io.on('connection', async (socket) => { //runs everytime a client connects to th
     const minute = roundTime * 1000
     rooms[pin].players.forEach((obj) => {
       if(obj.id === socket.id && obj.role === 'host')
-        io.to(pin).emit('set-page', {screen: 'preview'}); //question preview
-        setTimeout(() => {
-          io.to(pin).emit('set-page', {screen: 'game'}); //after set amount of time show editor
-        }, minute);
+       gameTimer(minute, pin);
       })
   })
 
@@ -127,8 +141,8 @@ io.on('connection', async (socket) => { //runs everytime a client connects to th
       player_id: socket.id,
       game_id: Number(socket.pin) || 1, 
       user_code: code, 
-      inputs_code: [""],
-      test_code: "",
+      inputs_code: rooms[pin].questions.io,  
+      test_code: rooms[pin].questions.test_func,
     });
   })
 
@@ -139,13 +153,17 @@ io.on('connection', async (socket) => { //runs everytime a client connects to th
       console.log('No pin found for socket');
       return;
     }
+    if(!rooms[pin]){
+      console.log('Room with pin: ', pin,' does not exist');
+      return;
+    }
     rooms[pin].players = rooms[pin].players.filter((player) => socket.id !== player.id);
-    const room_len = io.sockets.adapter.rooms.get(pin)
+    const room_len = io.sockets.adapter.rooms.get(pin);
     const playerCount = room_len ? room_len.size : 0;
-    io.to(pin).emit('player-count', playerCount)
+    io.to(pin).emit('player-count', playerCount);
     io.to(pin).emit('lobby-names', rooms[pin]);
-    if (rooms[pin].length === 0) {
-      delete rooms[pin]
+    if (rooms[pin] && rooms[pin].length === 0) {
+      delete rooms[pin];
     }
   })
 })

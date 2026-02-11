@@ -1,13 +1,17 @@
 import React from "react";
 import { useEffect } from "react";
 import axios from "axios";
-function LeetQuestion({ LeetInfo }) {
+import CircleTimer from "./CircleTimer";
+function LeetQuestion({ LeetInfo, endTime, duration}) {
   const { title, question, example, difficulty } = LeetInfo
   return (
     <div className="max-h-[100vh] w-[100vw] p-2 md:p-3 text-sm md:text-lg xl:w-[50vw] overflow-y-auto bg-[#F0E8D0]">
-      <h1 className='font-bold text-lg font-["Press_Start_2P"]'>
-        {title}
-      </h1>
+      <div className="flex items-center justify-between">
+        <h1 className='font-bold text-lg font-["Press_Start_2P"]'>
+          {title}
+        </h1>
+        <CircleTimer endTime={endTime} duration={duration}/>
+      </div>
       <p className={`bg-[#3f3f3f] w-fit p-2 ${(difficulty === 'Easy') ? 'text-green-500' : 'text-white'} font-medium rounded-sm my-2 text-sm`}>
         {difficulty}
       </p>

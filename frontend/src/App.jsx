@@ -17,6 +17,8 @@ function App() {
   const [lobbyNames, setLobbyNames] = useState([]);
   const [userName, setUserName] = useState('');
   const [musicEnabled, setMusicEnabled] = useState(true);
+  const [time, setTime] = useState(0);
+  const [duration, setDuration] = useState(0);
   const [teams, setTeams] = useState([
     { id: "me", name: userName || "Team 1", score: 0 }, 
   ]);
@@ -45,6 +47,11 @@ function App() {
       setQuestions(q);
     })
 
+    socket.on('get-time', (t, dur) => {
+      console.log('time : ', t);
+      setTime(t);
+      setDuration(dur);
+    })
     return () => {
       socket.disconnect();  
     };
@@ -55,24 +62,6 @@ function App() {
   })
   return (
     <div>
-
-      {import.meta.env.DEV && (
-        <div
-          style={{
-            position: "fixed",
-            top: 10,
-            right: 10,
-            display: "flex",
-            gap: "8px",
-            zIndex: 9999,
-          }}
-        >
-          <button onClick={() => setScreen("game")}>Game</button>
-          <button onClick={() => setScreen("scoreboard")}>Scoreboard</button>
-          <button onClick={() => setScreen("podium")}>Podium</button>
-        </div>
-      )}
-
       {screen === "login" && (
       <Login
         onJoin={(pin, name, musicOn) => {
@@ -125,8 +114,8 @@ function App() {
       {screen === "game" && (
         questions ? (
           <div className='flex flex-col xl:flex-row'>
-            <CodeEditor/>
-            <LeetQuestion LeetInfo={questions}/>
+            <CodeEditor LeetCode={questions}/>
+            <LeetQuestion LeetInfo={questions} endTime={time} duration={duration}/>
           </div>
         ) : (
           <div>Loading problem...</div>

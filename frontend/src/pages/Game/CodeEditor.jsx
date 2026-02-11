@@ -2,7 +2,7 @@ import Editor from '@monaco-editor/react';
 import React, { useRef, useState, useCallback, useEffect } from 'react';
 import socket from '../../services/socket';
 
-function CodeEditor() {
+function CodeEditor({LeetCode}) {
     const [stdOut, setStdOut] = useState('');
     const [stdErr, setStdErr] = useState('');
     const [terminalHeight, setTerminalHeight] = useState(200);
@@ -70,6 +70,7 @@ function CodeEditor() {
             {/* Code Editor - takes remaining space */}
             <div className="flex-1 min-h-0">
                 <Editor
+                    defaultValue={LeetCode.func_def}
                     height="100%"
                     defaultLanguage="python"
                     onMount={handleEditorDidMount}
