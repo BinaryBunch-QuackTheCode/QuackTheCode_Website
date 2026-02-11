@@ -19,7 +19,7 @@ export const leetcodeQuestion = [
         id: 242,
         difficulty: 'Easy', 
         company_tags: ['Meta', 'Google', 'Amazon', 'Microsoft', 'Uber', 'Bloomberg'],
-        function_def: 'def isAnagram(s: str, t: str) -> bool:',
+        func_def: 'def isAnagram(s: str, t: str) -> bool:',
         test_func:'import sys\nif isAnagram(nums, target) != output:\n\tsys.exit(1)\nsys.exit(0)',
         io: ['s="racecar"\n t="carrace", output = True'],
     },
