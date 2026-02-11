@@ -11,7 +11,6 @@ function Lobby({ pin, userName, lobbyNames, onStart, playerCount = 1, musicEnabl
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [selections, setSelections] = useState({});
   const myId = socket.id;
-  console.log(role)
   // keeps teammate line safe + avoids undefined entries
   const playerName = {};
   const safeLobbyNames = (lobbyNames || []).filter(Boolean);

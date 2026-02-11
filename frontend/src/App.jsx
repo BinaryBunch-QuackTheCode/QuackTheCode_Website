@@ -39,27 +39,18 @@ function App() {
       console.log('lobby_names:', name)
       setLobbyNames(name);
     })
+    
+    socket.on('get-questions', (q) => {
+      console.log('questions: ', q)
+      setQuestions(q);
+    })
+
     return () => {
       socket.disconnect();  
     };
   }, [])
   // Fetch questions when entering the game screen
-  useEffect(() => {
-    if (screen === "game" && !questions) {
-      const getQuestions = async () => {
-        try {
-          const response = await axios.get('/get_questions');
-          setQuestions(response.data);
-          console.log(response.data);
-        } catch (e) {
-          console.log(`Error getting questions: ${e}`);
-        }
-      };
-      getQuestions();
-    }
-  }, [screen, questions]);
-
-  socket.on('set-game-page', (obj) => {
+  socket.on('set-page', (obj) => {
     setScreen(obj.screen);
   })
   return (
@@ -97,7 +88,11 @@ function App() {
         }}
       />
     )}
-
+    {screen === "preview" && (
+      <div className='flex justify-center items-center bg-red-500 min-h-screen'>
+        <h1>Question Preview Screen Wait 5 Seconds...</h1>
+      </div>
+    )}
     {screen === "startGame" && (
       <StartGame
         onHostJoin={(pin, name) => {
