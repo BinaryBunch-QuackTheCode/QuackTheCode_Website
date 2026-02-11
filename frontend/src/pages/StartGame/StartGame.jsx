@@ -2,10 +2,12 @@ import { useEffect, useState } from "react";
 import "./StartGame.css";
 import socket from '../../services/socket';
 
-function StartGame({ onHostJoin, onBack, getRole }) {
+function StartGame({ onHostJoin, onBack, getRole}) {
   const [pin, setPin] = useState("");
   const [name, setName] = useState("");
   const [starting, setStarting] = useState(false);
+  const [roundDuration, setRoundDuration] = useState(0);
+
   useEffect(() => {
     socket.emit('create-pin', (uniquePin) => {
       setPin(uniquePin);
@@ -16,11 +18,11 @@ function StartGame({ onHostJoin, onBack, getRole }) {
     e.preventDefault();
     const trimmed = name.trim();
     if (!pin || !trimmed) return;
-    socket.emit('create-game', pin, name, (role) => {
+    socket.emit('create-game', roundDuration, name, pin, (role) => {
+      console.log('Role: ', role);
       getRole(role);
     })
     setStarting(true);
-
     if (onHostJoin) await onHostJoin(pin, trimmed);
   }
 
@@ -52,7 +54,7 @@ function StartGame({ onHostJoin, onBack, getRole }) {
           {starting ? "Starting..." : "Start Game"}
         </button>
       </form>
-
+      <input type="number" className="border-1 my-2" onChange={(e) => setRoundDuration(e.target.value)}/>
       <button type="button" className="font-['Press_Start_2P'] text-xs mt-4 bg-transparent border-none cursor-pointer text-black/75 underline hover:text-black" onClick={onBack}>
         Back
       </button>

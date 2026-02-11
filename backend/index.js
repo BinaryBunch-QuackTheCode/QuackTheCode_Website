@@ -64,27 +64,29 @@ function generateUniquePin() {
 io.on('connection', async (socket) => { //runs everytime a client connects to the server and gives a socket instance to them
   console.log('User Connected:', socket.id); //users get given a random id when they get connect
   // Host requests a new unique game PIN
-
   socket.on('create-pin', (callback) => {
     const pin = generateUniquePin();
-    rooms[pin] = [];  // Reserve it immediately
+    rooms[pin] = {players: []};  // Reserve it immediately
     socket.join(pin);
     callback(pin);  // Send PIN back to the host that requested it
+    console.log(rooms[pin].players);
   });
-
-  socket.on('create-game', (pin, name, callback) => {
-    rooms[pin].push({ id: socket.id, role: 'host', name});
+  
+  socket.on('create-game', (roundDuration, name, pin, callback) => {
+    rooms[pin].players.push({ id: socket.id, role: 'host', name});
+    rooms[pin].roundDuration = roundDuration;
+    rooms[pin].questions = leetcodeQuestion[Math.floor(Math.random() * leetcodeQuestion.length)];
     console.log('Created new game with PIN:', pin);
-    callback('host')
-    const room = io.sockets.adapter.rooms.get(pin)
+    callback('host');
+    const room = io.sockets.adapter.rooms.get(pin);
     const playerCount = room ? room.size : 0;
     io.to(pin).emit('player-count', playerCount);
-    io.to(pin).emit('lobby-names', rooms[pin]);
+    io.to(pin).emit('lobby-names', rooms[pin].players);
   });
   
   socket.on('check-pin', (candidatePin, callback) => {
     const isValid = candidatePin in rooms; 
-    console.log(`Socket ${socket.id} inputted a ${isValid} pin`)
+    console.log(`Socket ${socket.id} inputted a ${isValid} pin`);
     callback(isValid);
   })
 
@@ -93,23 +95,27 @@ io.on('connection', async (socket) => { //runs everytime a client connects to th
     if (!rooms[pin]) {
       rooms[pin] = [];
     }
-    rooms[pin].push({ id: socket.id, role: 'player', name});
+    rooms[pin].players.push({ id: socket.id, role: 'player', name});
     socket.pin = pin;
     const room = io.sockets.adapter.rooms.get(pin)
     const playerCount = room ? room.size : 0;
     io.to(pin).emit('player-count', playerCount);
-    io.to(pin).emit('lobby-names', rooms[pin]);
+    io.to(pin).emit('lobby-names', rooms[pin].players);
     console.log(`${name} joined. Players in room ${pin}: ${playerCount}`);
     console.log('Rooms: ', rooms)
   });
 
   socket.on('start-game', (pin) => {
-    rooms[pin].forEach((obj) => {
+    io.to(pin).emit('get-questions', rooms[pin].questions)
+    const roundTime = rooms[pin].roundDuration
+    console.log('round time: ', roundTime)
+    const minute = roundTime * 1000
+    rooms[pin].players.forEach((obj) => {
       if(obj.id === socket.id && obj.role === 'host')
         io.to(pin).emit('set-page', {screen: 'preview'}); //question preview
         setTimeout(() => {
           io.to(pin).emit('set-page', {screen: 'game'}); //after set amount of time show editor
-        }, 5000);
+        }, minute);
       })
   })
 
@@ -133,7 +139,7 @@ io.on('connection', async (socket) => { //runs everytime a client connects to th
       console.log('No pin found for socket');
       return;
     }
-    rooms[pin] = rooms[pin].filter((player) => socket.id !== player.id);
+    rooms[pin].players = rooms[pin].players.filter((player) => socket.id !== player.id);
     const room_len = io.sockets.adapter.rooms.get(pin)
     const playerCount = room_len ? room_len.size : 0;
     io.to(pin).emit('player-count', playerCount)
@@ -150,11 +156,11 @@ app.use(cors());
 // Serve frontend static files
 app.use(express.static(path.join(__dirname, '../frontend/dist')));
 
-
+/*
 app.get('/get_questions', (req, res) => {
   res.json(leetcodeQuestion[Math.floor(Math.random() * leetcodeQuestion.length)]);
 });
-
+*/
 
 // Catch-all: serve React app for any other routes (must be LAST)
 app.get('/{*splat}', (req, res) => {
