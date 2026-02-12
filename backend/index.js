@@ -83,6 +83,7 @@ io.on('connection', async (socket) => { //runs everytime a client connects to th
   // Host requests a new unique game PIN
   socket.on('create-pin', (callback) => {
     const pin = generateUniquePin();
+    socket.pin = pin;
     rooms[pin] = {players: []};  // Reserve it immediately
     socket.join(pin);
     callback(pin);  // Send PIN back to the host that requested it
@@ -142,7 +143,7 @@ io.on('connection', async (socket) => { //runs everytime a client connects to th
       player_id: socket.id,
       game_id: Number(pin) || 1,
       user_code: code,
-      inputs_code: rooms[pin].questions.io,
+      inputs_code: rooms[pin].questions.io, 
       test_code: rooms[pin].questions.test_func,
     });
   })
