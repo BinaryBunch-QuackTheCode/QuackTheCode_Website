@@ -134,14 +134,15 @@ io.on('connection', async (socket) => { //runs everytime a client connects to th
   })
 
   socket.on('user-submission', (code, callback) => {
-    console.log(`Received code submission from ${socket.id} in room ${socket.pin}, sending to executor...`);
+    const pin = socket.pin;
+    console.log(`Received code submission from ${socket.id} in room ${pin}, sending to executor...`);
     // Store callback so we can call it when executor responds
     pendingCallbacks.set(socket.id, callback);
     requestCodeExecution(executor, {
       player_id: socket.id,
-      game_id: Number(socket.pin) || 1, 
-      user_code: code, 
-      inputs_code: rooms[pin].questions.io,  
+      game_id: Number(pin) || 1,
+      user_code: code,
+      inputs_code: rooms[pin].questions.io,
       test_code: rooms[pin].questions.test_func,
     });
   })
