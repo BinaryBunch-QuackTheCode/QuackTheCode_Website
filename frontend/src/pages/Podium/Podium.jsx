@@ -1,19 +1,46 @@
 import "./Podium.css";
 
-export default function Podium({ teams = [], onBackToLobby }) {
-  const sorted = [...teams].sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
-  const top = sorted.slice(0, 3);
+export default function Podium({ players, onBackToLobby }) {
+
+  const finalResults = [];
+
+  players.forEach(player => {
+    const finalResult = {
+      name: player.name,
+      numSucceeded: 0,
+      totalAvgCPUTimeMs: 0,
+      avgSubmissionTimeMs: 0,
+    };
+
+    player.results.forEach(result => {
+      console.log(result);
+      if (result.succeeded) { 
+        finalResult.numSucceeded++; 
+        finalResult.totalAvgCPUTimeMs += result.avgCpuTimeMs; 
+        finalResult.avgSubmissionTimeMs += result.submissionTimeMs; 
+      }
+    });
+
+    if (finalResult.numSucceeded > 0) { 
+      finalResult.totalAvgCPUTimeMs /= finalResult.numSucceeded; 
+      finalResult.avgSubmissionTimeMs /= finalResult.numSucceeded; 
+    }
+
+    finalResults.push(finalResult);
+  });
 
   return (
     <div className="podium-container">
       <h1 className="podium-title">Winners</h1>
 
       <div className="podium-grid">
-        {top.map((t, i) => (
+        {finalResults.map((result, i) => (
           <div className={'podium-card place-${i + 1}'} key={i}>
             <div className="podium-medal">{i === 0 ? "gold" : i === 1 ? "silver" : "bronze"}</div>
-            <div className="podium-name">{t.name}</div>
-            <div className="podium-score">{t.score ?? 0} pts</div>
+            <div className="podium-name">{result.name}</div>
+            <div className="podium-score">Questions Completed: {result.numSucceeded}</div>
+            <div className="podium-score">Total Average CPU Time: {result.totalAvgCPUTimeMs}ms</div>
+            <div className="podium-score">Average Submission Time: {result.avgSubmissionTimeMs / 1000} seconds</div>
           </div>
         ))}
       </div>

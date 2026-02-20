@@ -19,15 +19,20 @@ const generateUniquePin = (rooms) => {
  * minute: Number of minutes of timeout 
  * pin: Game pin of lobby
  * next screen: string of next screen to switcch to, matches lobby
+ * callback: optional callback to run 
  *
 */
-const startTimerToScreen = (io, minute, pin, nextScreen) => {
-  setTimeout(() => {
+const startTimerToScreen = (io, minute, pin, nextScreen, callback) => {
+  const timeoutId = setTimeout(() => {
     io.to(pin).emit('set-page', {screen: nextScreen});
+    if (callback) {
+      callback();
+    }
   }, minute);
   const now = Date.now();
   const endTime = now + minute;
   io.to(pin).emit('get-time', endTime, minute / 1000);
+  return timeoutId; 
 }
 
 export { generateUniquePin, startTimerToScreen };

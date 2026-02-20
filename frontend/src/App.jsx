@@ -9,6 +9,7 @@ import socket from './services/socket';
 import Scoreboard from "./pages/Scoreboard/Scoreboard";
 import Podium from "./pages/Podium/Podium";
 import Spinner from './components/spinner';
+import Notification from './components/notification';
 
 function App() {
   const [questions, setQuestions] = useState(null);
@@ -20,9 +21,10 @@ function App() {
   const [musicEnabled, setMusicEnabled] = useState(true);
   const [time, setTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [teams, setTeams] = useState([
-    { id: "me", name: userName || "Team 1", score: 0 }, 
-  ]);
+  const [playersRemaining, setPlayersRemaining] = useState(0);
+  const [scoreResults, setScoreResults] = useState([]);
+
+
   const [role, setRole] = useState('');
   useEffect(() => {
     socket.connect();
@@ -53,24 +55,51 @@ function App() {
       setTime(t);
       setDuration(dur);
     })
+
+    socket.on('game-error', (message) => {
+      setShowNotification({title: 'Error', text: message})
+      setTimeout(() => {
+        setShowNotification(null);
+      }, 5000);
+    });
+
+    socket.on('players-remaining', (remaining) => {
+      setPlayersRemaining(remaining);
+    });
+
+    socket.on('score-results', (players) => {
+      setScoreResults(players);
+    })
+
+
     return () => {
       socket.disconnect();  
     };
   }, [])
+
   // Fetch questions when entering the game screen
   socket.on('set-page', (obj) => {
     setScreen(obj.screen);
   })
+
+  const [showNotification, setShowNotification] = useState(null)
+
   return (
     <div>
+      { showNotification && 
+        <Notification title={showNotification.title} text={showNotification.text}></Notification>
+      }
       {screen === "login" && (
       <Login
         onJoin={(pin, name, musicOn) => {
-          setMusicEnabled(musicOn);
-          setGamePin(pin);
-          setScreen("lobby");
-          socket.emit("join-game", pin, name);
-          setUserName(name);
+          socket.emit("join-game", pin, name, (status) => {
+            if (status) { 
+              setMusicEnabled(musicOn);
+              setGamePin(pin);
+              setScreen("lobby");
+              setUserName(name);
+            }
+          });
         }}
         onStartGame={(musicOn) => {
           setMusicEnabled(musicOn);
@@ -104,7 +133,6 @@ function App() {
         pin={gamePin}
         lobbyNames={lobbyNames}
         onStart={() => {
-          console.log("ON START CALLED");
           socket.emit('start-game', gamePin);
         }}
         playerCount={playerCount}
@@ -116,8 +144,8 @@ function App() {
       {screen === "game" && (
         questions ? (
           <div className='flex flex-col xl:flex-row'>
-            <CodeEditor LeetCode={questions} onFinish={() => setScreen('submitted')}/>
-            <LeetQuestion LeetInfo={questions} endTime={time} duration={duration}/>
+            <CodeEditor LeetCode={questions} onFinish={() => {}}/>
+            <LeetQuestion LeetInfo={questions} endTime={time} duration={duration} playersRemaining={playersRemaining}/>
           </div>
         ) : (
             <Spinner/> 
@@ -132,7 +160,7 @@ function App() {
       
      {screen === "scoreboard" && (
        <Scoreboard
-         teams={teams}
+         players={scoreResults}
          onNext={() => {
              if (role === 'host') { 
                 socket.emit('start-game', gamePin);
@@ -149,7 +177,7 @@ function App() {
 
      {screen === "podium" && (
        <Podium
-         teams={teams}
+         players={scoreResults}
          onBackToLobby={() => {
              if (role === 'host') { 
                  socket.emit('switch-screen', gamePin, 'lobby');
