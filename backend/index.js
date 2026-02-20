@@ -86,6 +86,10 @@ io.on('connection', async (socket) => { //runs everytime a client connects to th
     callback(pin);  // Send PIN back to the host that requested it
     console.log(rooms[pin].players);
   });
+
+  socket.on('end-game', (pin) => {
+    io.to(pin).emit('set-page', 'podium');
+  });
   
   socket.on('create-game', (roundDuration, name, pin, callback) => {
     rooms[pin].players.push({ id: socket.id, role: 'host', name});
