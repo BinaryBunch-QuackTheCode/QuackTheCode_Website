@@ -1,18 +1,31 @@
 import "./Scoreboard.css";
 
-export default function Scoreboard({ teams = [], onNext, onEnd, role }) {
-  const sorted = [...teams].sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
+export default function Scoreboard({ players, onNext, onEnd, role }) {
+
+  const roundResults = [];
+
+  players.forEach(player => {
+    const result = player.results[player.results.length - 1];
+    console.log(result);
+    roundResults.push({
+      name: player.name, 
+      succeeded: result.succeeded, 
+      avgCpuTimeMs: result.avgCpuTimeMs, 
+      submissionTimeMs: result.submissionTimeMs
+    })
+  });
 
   return (
     <div className="scoreboard-container">
       <h1 className="scoreboard-title">Scoreboard</h1>
 
       <div className="scoreboard-card">
-        {sorted.map((t, idx) => (
-          <div className="scoreboard-row" key={t.id ?? idx}>
-            <div className="scoreboard-rank">{idx + 1}</div>
-            <div className="scoreboard-name">{t.name}</div>
-            <div className="scoreboard-score">{t.score ?? 0}</div>
+        {roundResults.map((result, idx) => (
+          <div className="scoreboard-row" key={idx}>
+            <div className="scoreboard-name">{result.name}</div>
+            <div className="scoreboard-rank">{result.succeeded ? "Completed" : "Incomplete"}</div>
+            <div className="scoreboard-score">CPU Time: {result.avgCpuTimeMs}ms</div>
+            <div className="scoreboard-score">Submission Time: {result.submissionTimeMs / 1000} seconds</div>
           </div>
         ))}
       </div>

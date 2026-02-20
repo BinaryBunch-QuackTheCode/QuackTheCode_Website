@@ -2,7 +2,7 @@ import React from "react";
 import { useEffect } from "react";
 import axios from "axios";
 import CircleTimer from "./CircleTimer";
-function LeetQuestion({ LeetInfo, endTime, duration}) {
+function LeetQuestion({ LeetInfo, endTime, duration, playersRemaining}) {
   const { title, question, example, difficulty } = LeetInfo
   return (
     <div className="max-h-[100vh] w-[100vw] p-2 md:p-3 text-sm md:text-lg xl:w-[50vw] overflow-y-auto bg-[#232323] text-white">
@@ -12,6 +12,7 @@ function LeetQuestion({ LeetInfo, endTime, duration}) {
         </h1>
         <CircleTimer endTime={endTime} duration={duration}/>
       </div>
+        <h3>Players remaining: {playersRemaining}</h3> 
       <p className={`bg-[#3f3f3f] w-fit p-2 ${(difficulty === 'Easy') ? 'text-green-500' : 'text-white'} font-medium rounded-sm my-2 text-sm`}>
         {difficulty}
       </p>
