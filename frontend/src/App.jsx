@@ -140,7 +140,7 @@ function App() {
          }}
          onEnd={() => {
              if (role === 'host') { 
-                socket.emit('end-game', gamePin)
+                socket.emit('switch-screen', gamePin, 'podium')
              }
          }}
          role={role}
@@ -152,8 +152,7 @@ function App() {
          teams={teams}
          onBackToLobby={() => {
              if (role === 'host') { 
-                 console.log('back to lobby!');
-                 socket.emit('gotolobby', gamePin);
+                 socket.emit('switch-screen', gamePin, 'lobby');
              }
          }}
        />
