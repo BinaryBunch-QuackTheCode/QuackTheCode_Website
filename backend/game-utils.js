@@ -1,5 +1,7 @@
 
-// Generate a unique 6-digit PIN
+/* Generate a unique 6-digit PIN
+ * rooms: Room obj of pins as keys, to verify uniqueness
+ */
 const generateUniquePin = (rooms) => {
   let pin;
   do {
@@ -8,18 +10,25 @@ const generateUniquePin = (rooms) => {
   return pin;
 }
 
-const gameTimer = (io, minute, pin, nextScreen) => {
-  /* 
-    Checks if there are still questions left. if none then break. 
-    if there are still questions then go through each question
-  */
+
+/* 
+ * Sets a timer until the next screen
+ * Also broadcasts the time to the users, though may not be used 
+ *
+ * io: Socket server 
+ * minute: Number of minutes of timeout 
+ * pin: Game pin of lobby
+ * next screen: string of next screen to switcch to, matches lobby
+ *
+*/
+const startTimerToScreen = (io, minute, pin, nextScreen) => {
   setTimeout(() => {
-    io.to(pin).emit('set-page', {screen: nextScreen}); //after set amount of time show editor
+    io.to(pin).emit('set-page', {screen: nextScreen});
   }, minute);
   const now = Date.now();
   const endTime = now + minute;
   io.to(pin).emit('get-time', endTime, minute / 1000);
 }
 
-export { generateUniquePin, gameTimer };
+export { generateUniquePin, startTimerToScreen };
 

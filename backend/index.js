@@ -16,7 +16,7 @@ const __dirname = path.dirname(__filename);
 const PORT = 3000;
 
 /* Setupt handeling of executions, executin callbacks to send the message to the user 
- *
+ * The user will receive the executor message back alongside the input code 
  */
 const setupExecution = (executor, pendingCallbacks) => {
   setExecutorOnMessage(executor, (message) => {

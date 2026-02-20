@@ -1,7 +1,7 @@
 
 import { requestCodeExecution } from './executor-comms.js';
 import { leetcodeQuestion } from './leetcode.js';
-import { gameTimer, generateUniquePin } from './game-utils.js';
+import { startTimerToScreen , generateUniquePin } from './game-utils.js';
 
 /* Return the function callback to be used when a user socket is created 
  */
@@ -76,9 +76,9 @@ const getClientConnectionHandler = (executor, io, pendingCallbacks) => {
       const minute = roundTime * 1000
       rooms[pin].players.forEach((obj) => {
         if(obj.id === socket.id && obj.role === 'host')
-         io.to(pin).emit('set-page', {screen: 'preview'}); //question preview
-         gameTimer(io, 1000, pin, 'game');
-         gameTimer(io, minute, pin, 'scoreboard');
+          io.to(pin).emit('set-page', {screen: 'preview'}); //question preview
+          startTimerToScreen(io, 1000, pin, 'game');
+          startTimerToScreen(io, minute, pin, 'scoreboard');
         })
     })
 
