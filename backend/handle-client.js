@@ -148,9 +148,18 @@ const getClientConnectionHandler = (executor, io, pendingCallbacks) => {
 
         startTimerToScreen(io, 1000, pin, 'game');
         rooms[pin].gameTimeoutId = startTimerToScreen(io, minute, pin, 'scoreboard', () => {
-          io.to(pin).emit('score-results', {
-            players: rooms[pin].players
+          rooms[pin].players.forEach(player => {
+            // mark unfinished players as failed
+            if (player.results.length !== rooms[pin].roundNum) { 
+              player.results.push({
+                succeeded: false, 
+                avgCpuTimeMs: null,
+                submissionTimeMs: null
+              });
+            }
           });
+
+          io.to(pin).emit('score-results', rooms[pin].players);
         });
 
       } else {
@@ -159,6 +168,16 @@ const getClientConnectionHandler = (executor, io, pendingCallbacks) => {
     })
 
 
+    /* ----------------- Back to lobby ------------- */ 
+
+    socket.on('back-to-lobby', (pin) => {
+      // reset game state
+      rooms[pin].roundNum = 0; 
+      rooms[pin].players.forEach(player => {
+        player.results = [];
+      })
+      io.to(pin).emit('set-page', {screen: 'lobby'});
+    });
 
 
     /* ---------------------------- User Submission ------------------------- */ 

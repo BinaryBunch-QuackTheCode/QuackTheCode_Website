@@ -4,6 +4,8 @@ export default function Podium({ players, onBackToLobby }) {
 
   const finalResults = [];
 
+  console.log('Players: ', players);
+
   players.forEach(player => {
     const finalResult = {
       name: player.name,

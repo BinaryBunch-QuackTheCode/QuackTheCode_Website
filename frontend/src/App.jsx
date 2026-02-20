@@ -180,7 +180,7 @@ function App() {
          players={scoreResults}
          onBackToLobby={() => {
              if (role === 'host') { 
-                 socket.emit('switch-screen', gamePin, 'lobby');
+                 socket.emit('back-to-lobby', gamePin);
              }
          }}
        />
