@@ -1,6 +1,6 @@
 import "./Scoreboard.css";
 
-export default function Scoreboard({ teams = [], onNext, onEnd }) {
+export default function Scoreboard({ teams = [], onNext, onEnd, role }) {
   const sorted = [...teams].sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
 
   return (
@@ -17,10 +17,12 @@ export default function Scoreboard({ teams = [], onNext, onEnd }) {
         ))}
       </div>
 
+      { role === 'host' && 
       <div className="scoreboard-actions">
         <button className="scoreboard-button" onClick={onNext}>Next Question</button>
         <button className="scoreboard-button secondary" onClick={onEnd}>End Game</button>
       </div>
+       }
     </div>
   );
 }

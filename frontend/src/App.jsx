@@ -137,7 +137,11 @@ function App() {
                 socket.emit('start-game', gamePin);
              }
          }}
-         onEnd={() => setScreen("podium")}
+         onEnd={() => {
+             socket.emit('end-game', gamePin)
+             setScreen("podium");
+         }}
+         role={role}
        />
      )}
 
