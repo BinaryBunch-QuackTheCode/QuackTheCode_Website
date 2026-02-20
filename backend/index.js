@@ -37,6 +37,7 @@ setExecutorOnMessage(executor, (message) => {
   // Find the callback for this player and call it
   const callback = pendingCallbacks.get(message.player_id);
   if (callback) {
+    message.inputs_code = callback.inputs_code; 
     callback(message);
     pendingCallbacks.delete(message.player_id);  // Clean up
   }
@@ -61,21 +62,17 @@ function generateUniquePin() {
   return pin;
 }
 
-function gameTimer(minute, pin){
+function gameTimer(minute, pin, nextScreen){
   /* 
     Checks if there are still questions left. if none then break. 
     if there are still questions then go through each question
   */
-  io.to(pin).emit('set-page', {screen: 'preview'}); //question preview
   setTimeout(() => {
-    io.to(pin).emit('set-page', {screen: 'game'}); //after set amount of time show editor
-  }, 1000);
+    io.to(pin).emit('set-page', {screen: nextScreen}); //after set amount of time show editor
+  }, minute);
   const now = Date.now();
   const endTime = now + minute;
   io.to(pin).emit('get-time', endTime, minute / 1000);
-  setTimeout(() => {
-    gameTimer(minute, pin);
-  }, minute)
 }
 
 io.on('connection', async (socket) => { //runs everytime a client connects to the server and gives a socket instance to them
@@ -130,7 +127,9 @@ io.on('connection', async (socket) => { //runs everytime a client connects to th
     const minute = roundTime * 1000
     rooms[pin].players.forEach((obj) => {
       if(obj.id === socket.id && obj.role === 'host')
-       gameTimer(minute, pin);
+       io.to(pin).emit('set-page', {screen: 'preview'}); //question preview
+       gameTimer(1000, pin, 'game');
+       gameTimer(minute, pin, 'scoreboard');
       })
   })
 
@@ -138,6 +137,7 @@ io.on('connection', async (socket) => { //runs everytime a client connects to th
     const pin = socket.pin;
     console.log(`Received code submission from ${socket.id} in room ${pin}, sending to executor...`);
     // Store callback so we can call it when executor responds
+    callback.inputs_code = rooms[pin].questions.io;
     pendingCallbacks.set(socket.id, callback);
     requestCodeExecution(executor, {
       player_id: socket.id,
@@ -147,6 +147,23 @@ io.on('connection', async (socket) => { //runs everytime a client connects to th
       test_code: rooms[pin].questions.test_func,
     });
   })
+
+  // just for small test cases 
+  socket.on('user-run', (code, callback) => {
+    const pin = socket.pin;
+    console.log(`Received code run from ${socket.id} in room ${pin}, sending to executor...`);
+    // Store callback so we can call it when executor responds
+    callback.inputs_code = rooms[pin].questions.io;
+    pendingCallbacks.set(socket.id, callback);
+    requestCodeExecution(executor, {
+      player_id: socket.id,
+      game_id: Number(pin) || 1,
+      user_code: code,
+      inputs_code: rooms[pin].questions.io.slice(0, 3), 
+      test_code: rooms[pin].questions.test_func,
+    });
+  })
+
 
   socket.on('disconnect', (reason) => {
     console.log(`${socket.id} because of: ${reason}`);
