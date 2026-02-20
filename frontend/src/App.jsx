@@ -138,8 +138,9 @@ function App() {
              }
          }}
          onEnd={() => {
-             socket.emit('end-game', gamePin)
-             setScreen("podium");
+             if (role === 'host') { 
+                socket.emit('end-game', gamePin)
+             }
          }}
          role={role}
        />

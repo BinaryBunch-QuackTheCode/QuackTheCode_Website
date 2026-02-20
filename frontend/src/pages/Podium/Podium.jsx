@@ -10,7 +10,7 @@ export default function Podium({ teams = [], onBack }) {
 
       <div className="podium-grid">
         {top.map((t, i) => (
-          <div className={'podium-card place-${i + 1}'} key={t.id ?? i}>
+          <div className={'podium-card place-${i + 1}'} key={i}>
             <div className="podium-medal">{i === 0 ? "gold" : i === 1 ? "silver" : "bronze"}</div>
             <div className="podium-name">{t.name}</div>
             <div className="podium-score">{t.score ?? 0} pts</div>

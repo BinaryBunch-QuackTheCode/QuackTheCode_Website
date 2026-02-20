@@ -88,7 +88,7 @@ io.on('connection', async (socket) => { //runs everytime a client connects to th
   });
 
   socket.on('end-game', (pin) => {
-    io.to(pin).emit('set-page', 'podium');
+    io.to(pin).emit('set-page', {screen: 'podium'});
   });
   
   socket.on('create-game', (roundDuration, name, pin, callback) => {
