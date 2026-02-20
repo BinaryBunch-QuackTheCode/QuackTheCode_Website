@@ -32,7 +32,7 @@ function Login({ onJoin, onStartGame }) {
   };
 
   return (
-    <div className="h-screen flex flex-col justify-center items-center bg-[#f8c129]">
+    <div className="h-screen flex flex-col justify-center items-center bg-[#232323]">
       <h1 className="text-white text-5xl mb-8 font-['Press_Start_2P']">QuackTheCode</h1>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-3 items-center">

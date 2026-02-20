@@ -8,6 +8,7 @@ import LeetQuestion from './pages/Game/LeetQuestion';
 import socket from './services/socket';
 import Scoreboard from "./pages/Scoreboard/Scoreboard";
 import Podium from "./pages/Podium/Podium";
+import Spinner from './components/spinner';
 
 function App() {
   const [questions, setQuestions] = useState(null);
@@ -78,8 +79,8 @@ function App() {
       />
     )}
     {screen === "preview" && (
-      <div className='flex justify-center items-center bg-red-500 min-h-screen'>
-        <h1>Question Preview Screen Wait 5 Seconds...</h1>
+      <div className='flex justify-center items-center bg-[#232323] min-h-screen text-white'>
+        <Spinner/> 
       </div>
     )}
     {screen === "startGame" && (
@@ -114,18 +115,28 @@ function App() {
       {screen === "game" && (
         questions ? (
           <div className='flex flex-col xl:flex-row'>
-            <CodeEditor LeetCode={questions}/>
+            <CodeEditor LeetCode={questions} onFinish={() => setScreen('submitted')}/>
             <LeetQuestion LeetInfo={questions} endTime={time} duration={duration}/>
           </div>
         ) : (
-          <div>Loading problem...</div>
+            <Spinner/> 
         )
+      )}
+
+      {screen === "submitted" && (
+      <div className='flex justify-center items-center bg-[#232323] min-h-screen text-white'>
+          Successfully Submitted! Hang tight while others complete the question
+      </div>
       )}
       
      {screen === "scoreboard" && (
        <Scoreboard
          teams={teams}
-         onNext={() => setScreen("game")}
+         onNext={() => {
+             if (role === 'host') { 
+                socket.emit('start-game', gamePin);
+             }
+         }}
          onEnd={() => setScreen("podium")}
        />
      )}

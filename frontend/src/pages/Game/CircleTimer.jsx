@@ -24,14 +24,14 @@ const CircleTimer = ({ endTime, duration }) => {
           style={{
             background: `conic-gradient(
               from 0deg,
-              #F0E8D0 0% ${elapsed}%,
+              #232323 0% ${elapsed}%,
              ${timeLeft <= startingTime / 4 ? '#ff0000' : timeLeft <= startingTime / 2 ? '#fffb00' : '#3bf68c'} ${elapsed}% 100%
             )`,
           }}
         />
         {/* Centered text */}
         <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-xl font-bold text-black">{Math.ceil(timeLeft / 1000)}</span>
+          <span className="text-xl font-bold text-white">{Math.ceil(timeLeft / 1000)}</span>
         </div>
       </div>
     </div>

@@ -5,7 +5,7 @@ import CircleTimer from "./CircleTimer";
 function LeetQuestion({ LeetInfo, endTime, duration}) {
   const { title, question, example, difficulty } = LeetInfo
   return (
-    <div className="max-h-[100vh] w-[100vw] p-2 md:p-3 text-sm md:text-lg xl:w-[50vw] overflow-y-auto bg-[#F0E8D0]">
+    <div className="max-h-[100vh] w-[100vw] p-2 md:p-3 text-sm md:text-lg xl:w-[50vw] overflow-y-auto bg-[#232323] text-white">
       <div className="flex items-center justify-between">
         <h1 className='font-bold text-lg font-["Press_Start_2P"]'>
           {title}
@@ -23,10 +23,10 @@ function LeetQuestion({ LeetInfo, endTime, duration}) {
       {example.map((ex, idx) =>
       <div>
         <p className="font-bold">Example #{idx + 1}</p>
-        <div class="bg-[#D4874B] border-4 border-[#5C3A1F] 
-            shadow-[4px_4px_0px_0px_#5C3A1F]
+        <div class="bg-[#009966] border-4 border-[#2D4B41] 
+            shadow-[4px_4px_0px_0px_#2D4b41]
             hover:translate-x-[2px] hover:translate-y-[2px]
-            hover:shadow-[2px_2px_0px_0px_#5C3A1F]
+            hover:shadow-[2px_2px_0px_0px_#2D4B41]
             px-6 py-3 font-['Press_Start_2P'] text-[#3D2614]
             cursor-pointer transition-all text-sm m-4">
           <p>

@@ -27,10 +27,10 @@ function StartGame({ onHostJoin, onBack, getRole}) {
   }
 
   return (
-    <div className="h-screen flex flex-col justify-center items-center bg-[#f8c129]">
+    <div className="h-screen flex flex-col justify-center items-center bg-[#232323]">
       <h1 className="text-white text-5xl mb-8 font-['Press_Start_2P']">QuackTheCode</h1>
 
-      <div className="font-['Press_Start_2P'] text-sm text-black/75 mb-4">Your Game PIN:</div>
+      <div className="font-['Press_Start_2P'] text-sm text-white/75 mb-4">Your Game PIN:</div>
 
       <div className="font-['Press_Start_2P'] text-2xl tracking-wider text-black bg-white border-4 border-black rounded-none px-5 py-3 mb-6 min-w-[200px] text-center shadow-[3px_3px_0_rgba(0,0,0,0.2)]" aria-label="Game PIN">
         {pin || "......"}
@@ -54,8 +54,12 @@ function StartGame({ onHostJoin, onBack, getRole}) {
           {starting ? "Starting..." : "Start Game"}
         </button>
       </form>
-      <input type="number" className="border-1 my-2" onChange={(e) => setRoundDuration(e.target.value)}/>
-      <button type="button" className="font-['Press_Start_2P'] text-xs mt-4 bg-transparent border-none cursor-pointer text-black/75 underline hover:text-black" onClick={onBack}>
+      <div>
+      <p className='text-white mt-3'>Game time (Minutes)</p>
+      <input type="number" className="border-1 my-2 text-white text-center border-white" onChange={(e) => setRoundDuration(e.target.value * 60)}/>
+
+      </div>
+      <button type="button" className="font-['Press_Start_2P'] text-xs mt-4 bg-transparent border-none cursor-pointer text-white/75 underline hover:text-white" onClick={onBack}>
         Back
       </button>
     </div>
