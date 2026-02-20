@@ -90,7 +90,11 @@ io.on('connection', async (socket) => { //runs everytime a client connects to th
   socket.on('end-game', (pin) => {
     io.to(pin).emit('set-page', {screen: 'podium'});
   });
-  
+
+  socket.on('gotolobby', (pin) => {
+    io.to(pin).emit('set-page', {screen: 'lobby'});
+  });
+
   socket.on('create-game', (roundDuration, name, pin, callback) => {
     rooms[pin].players.push({ id: socket.id, role: 'host', name});
     rooms[pin].roundDuration = roundDuration;

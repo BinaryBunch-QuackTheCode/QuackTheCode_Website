@@ -104,6 +104,7 @@ function App() {
         pin={gamePin}
         lobbyNames={lobbyNames}
         onStart={() => {
+          console.log("ON START CALLED");
           socket.emit('start-game', gamePin);
         }}
         playerCount={playerCount}
@@ -149,7 +150,12 @@ function App() {
      {screen === "podium" && (
        <Podium
          teams={teams}
-         onBackToLobby={() => setScreen("lobby")}
+         onBackToLobby={() => {
+             if (role === 'host') { 
+                 console.log('back to lobby!');
+                 socket.emit('gotolobby', gamePin);
+             }
+         }}
        />
      )}
     </div>

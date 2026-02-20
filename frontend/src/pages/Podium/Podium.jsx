@@ -1,6 +1,6 @@
 import "./Podium.css";
 
-export default function Podium({ teams = [], onBack }) {
+export default function Podium({ teams = [], onBackToLobby }) {
   const sorted = [...teams].sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
   const top = sorted.slice(0, 3);
 
@@ -18,7 +18,7 @@ export default function Podium({ teams = [], onBack }) {
         ))}
       </div>
 
-      <button className="podium-button" onClick={onBack}>Back</button>
+      <button className="podium-button" onClick={onBackToLobby}>Back to Lobby</button>
     </div>
   );
 }
