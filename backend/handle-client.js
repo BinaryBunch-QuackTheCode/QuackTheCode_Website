@@ -211,7 +211,7 @@ const getClientConnectionHandler = (executor, io, pendingCallbacks) => {
               player.results.push({
                 succeeded,
                 avgCpuTimeMs,
-                submissionTimeMs: Date.now() - rooms[pin].gameStartTime
+                submissionTimeMs: Date.now() - rooms[pin].gameStartTime,
               })
               break;
             }
