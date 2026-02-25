@@ -2,29 +2,25 @@ export default function Scoreboard({ players, onNext, onEnd, role }) {
   const roundResults = [];
 
   players.forEach((player) => {
+    count = 0
+    for(i = 0; i < player.results.length; i++){
+      const result = player.results[i];;
+       if (result.succeeded) {
+        count++;
+       }
+    }
     const result = player.results[player.results.length - 1];
     roundResults.push({
       name: player.name,
       succeeded: result.succeeded,
+      totalSucc: count,
       avgCpuTimeMs: result.avgCpuTimeMs,
       submissionTimeMs: result.submissionTimeMs,
     });
   });
 
   roundResults.sort((a, b) => {
-    aSucceeded = a.reduce((total, bool) => {
-      if(bool){
-        total += 1
-      }
-    }, 0)
-    
-    bSucceeded = b.reduce((total, bool) => {
-      if(bool){
-        total += 1
-      }
-    }, 0)
-
-    if(aSucceeded != bSucceeded){
+    if(a.totalSucc != b.totalSucc){
       return aSucceeded - bSucceeded
     }
     else if(a.avgCpuTimeMs - b.avgCpuTimeMs){
@@ -34,7 +30,7 @@ export default function Scoreboard({ players, onNext, onEnd, role }) {
       return a.submissionTimeMs - b.submissionTimeMs
     }
   })
-  
+
   return (
     <div className="relative min-h-[100dvh] w-full text-white">
       {/* ── layered background (matches Lobby) ── */}
