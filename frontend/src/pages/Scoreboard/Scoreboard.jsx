@@ -21,13 +21,13 @@ export default function Scoreboard({ players, onNext, onEnd, role }) {
 
   roundResults.sort((a, b) => {
     if(a.totalSucc != b.totalSucc){
-      return a.totalSucc - b.totalSucc
+      return b.totalSucc - a.totalSucc
     }
     else if(a.avgCpuTimeMs - b.avgCpuTimeMs){
-      return a.avgCpuTimeMs - b.avgCpuTimeMs
+      return b.avgCpuTimeMs - a.avgCpuTimeMs
     }
     else{
-      return a.submissionTimeMs - b.submissionTimeMs
+      return b.submissionTimeMs - a.submissionTimeMs
     }
   })
 
