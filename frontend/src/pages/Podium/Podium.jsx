@@ -11,12 +11,14 @@ export default function Podium({ players, onBackToLobby }) {
     };
 
     player.results.forEach((result) => {
+      console.log(result.points);
       if (result.succeeded) {
         finalResult.numSucceeded++;
         finalResult.totalAvgCPUTimeMs += result.avgCpuTimeMs;
         finalResult.avgSubmissionTimeMs += result.submissionTimeMs;
         finalResults.points += result.points;
       }
+      console.log()
     });
 
     if (finalResult.numSucceeded > 0) {
