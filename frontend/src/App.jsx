@@ -189,6 +189,7 @@ function App() {
                  socket.emit('back-to-lobby', gamePin);
              }
          }}
+         role={role}
        />
      )}
     </div>

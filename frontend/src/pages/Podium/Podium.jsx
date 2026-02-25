@@ -1,4 +1,4 @@
-export default function Podium({ players, onBackToLobby }) {
+export default function Podium({ players, onBackToLobby, role }) {
   const finalResults = [];
 
   players.forEach((player) => {
@@ -107,12 +107,14 @@ export default function Podium({ players, onBackToLobby }) {
         </div>
 
         {/* Back button */}
+        {role &&
         <button
           onClick={onBackToLobby}
           className="bg-emerald-500 hover:bg-emerald-400 text-black font-semibold px-8 py-3 rounded-lg transition-all duration-150 active:scale-95 cursor-pointer shadow-lg shadow-emerald-500/25"
         >
           Back to Lobby
         </button>
+        }
       </div>
     </div>
   );
