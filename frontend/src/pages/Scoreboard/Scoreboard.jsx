@@ -2,9 +2,9 @@ export default function Scoreboard({ players, onNext, onEnd, role }) {
   const roundResults = [];
 
   players.forEach((player) => {
-    let count = 0
-    for(i = 0; i < player.results.length; i++){
-      const result = player.results[i];;
+    let count = 0;
+    for(let i = 0; i < player.results.length; i++){
+      const result = player.results[i];
        if (result.succeeded) {
         count++;
        }
@@ -21,7 +21,7 @@ export default function Scoreboard({ players, onNext, onEnd, role }) {
 
   roundResults.sort((a, b) => {
     if(a.totalSucc != b.totalSucc){
-      return aSucceeded - bSucceeded
+      return a.totalSucc - b.totalSucc
     }
     else if(a.avgCpuTimeMs - b.avgCpuTimeMs){
       return a.avgCpuTimeMs - b.avgCpuTimeMs
