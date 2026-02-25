@@ -142,12 +142,6 @@ function Lobby({ pin, userName, lobbyNames, onStart, playerCount = 1, musicEnabl
       <div className="flex flex-col items-center justify-center flex-1 gap-4 w-full">
         <h1 className="text-5xl font-bold">{userName}</h1>
         <p className="text-lg opacity-80">Players joined: {playerCount}</p>
-        <div className="text-center">
-          <div className="text-3xl sm:text-4xl font-extrabold tracking-wide">
-            Choose Your Quacker!
-          </div>
-        </div>
-
         <div className="w-full max-w-4xl">
           <CharacterSelect
             lobbyNames={lobbyNames}
