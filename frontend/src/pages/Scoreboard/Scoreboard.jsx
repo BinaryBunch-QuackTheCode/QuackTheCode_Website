@@ -10,25 +10,19 @@ export default function Scoreboard({ players, onNext, onEnd, role }) {
        }
     }
     const result = player.results[player.results.length - 1];
+    players.points += result.succeeded ? 1000 - avgCpuTimeMs - submissionTimeMs: 0
     roundResults.push({
       name: player.name,
       succeeded: result.succeeded,
       totalSucc: count,
       avgCpuTimeMs: result.avgCpuTimeMs,
       submissionTimeMs: result.submissionTimeMs,
+      points: player.points
     });
   });
 
   roundResults.sort((a, b) => {
-    if(a.totalSucc != b.totalSucc){
-      return b.totalSucc - a.totalSucc;
-    }
-    else if(a.avgCpuTimeMs - b.avgCpuTimeMs){
-      return b.avgCpuTimeMs - a.avgCpuTimeMs;
-    }
-    else{
-      return b.submissionTimeMs - a.submissionTimeMs;
-    }
+    return b.points - a.points;
   })
 
   return (
