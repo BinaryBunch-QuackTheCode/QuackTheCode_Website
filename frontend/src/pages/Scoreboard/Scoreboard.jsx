@@ -10,7 +10,7 @@ export default function Scoreboard({ players, onNext, onEnd, role }) {
        }
     }
     const result = player.results[player.results.length - 1];
-    players.points += result.succeeded ? 1000 - result.avgCpuTimeMs - result.submissionTimeMs : 0
+    players.points += result.succeeded ? 1000 - result.avgCpuTimeMs - (result.submissionTimeMs * 1000) : 0
     console.log(players.points)
     roundResults.push({
       name: player.name,
