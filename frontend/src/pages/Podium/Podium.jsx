@@ -7,7 +7,7 @@ export default function Podium({ players, onBackToLobby }) {
       numSucceeded: 0,
       totalAvgCPUTimeMs: 0,
       avgSubmissionTimeMs: 0,
-      points: 0,
+      points: player.points || 0,
     };
 
     player.results.forEach((result) => {
@@ -16,7 +16,6 @@ export default function Podium({ players, onBackToLobby }) {
         finalResult.numSucceeded++;
         finalResult.totalAvgCPUTimeMs += result.avgCpuTimeMs;
         finalResult.avgSubmissionTimeMs += result.submissionTimeMs;
-        finalResults.points += result.points;
       }
       console.log()
     });
