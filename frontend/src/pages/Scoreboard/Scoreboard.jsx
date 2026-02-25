@@ -3,22 +3,22 @@ export default function Scoreboard({ players, onNext, onEnd, role }) {
   console.log('Players: ', players)
   players.forEach((player) => {
     let count = 0;
-    for(let i = 0; i < player.results.length; i++){
+    for (let i = 0; i < player.results.length; i++) {
       const result = player.results[i];
-       if (result.succeeded) {
+      if (result.succeeded) {
         count++;
-       }
+      }
     }
     const result = player.results[player.results.length - 1];
-    players.points += result.succeeded ? 1000 - result.avgCpuTimeMs - (result.submissionTimeMs * 1000) : 0
-    console.log(players.points)
+    player.points = (player.points || 0) + (result.succeeded ? 1000 - result.avgCpuTimeMs - (result.submissionTimeMs * 1000) : 0);
+    console.log(player.points)
     roundResults.push({
       name: player.name,
       succeeded: result.succeeded,
       totalSucc: count,
       avgCpuTimeMs: result.avgCpuTimeMs,
       submissionTimeMs: result.submissionTimeMs,
-      points: players.points
+      points: player.points
     });
   });
 
