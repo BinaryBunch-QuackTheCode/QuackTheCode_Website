@@ -7,6 +7,7 @@ export default function Podium({ players, onBackToLobby }) {
       numSucceeded: 0,
       totalAvgCPUTimeMs: 0,
       avgSubmissionTimeMs: 0,
+      points: 0,
     };
 
     player.results.forEach((result) => {
@@ -14,6 +15,7 @@ export default function Podium({ players, onBackToLobby }) {
         finalResult.numSucceeded++;
         finalResult.totalAvgCPUTimeMs += result.avgCpuTimeMs;
         finalResult.avgSubmissionTimeMs += result.submissionTimeMs;
+        finalResults.points += result.points;
       }
     });
 
@@ -24,6 +26,11 @@ export default function Podium({ players, onBackToLobby }) {
 
     finalResults.push(finalResult);
   });
+
+  //sort the final results from highest to lowest points
+  finalResults.sort((a,b) => {
+    return b.points - a.points;
+  })
 
   // Only take top 3
   const top3 = finalResults.slice(0, 3);
@@ -71,6 +78,7 @@ export default function Podium({ players, onBackToLobby }) {
                   <div className="text-4xl sm:text-5xl mb-2">{cfg.medal}</div>
                   <div className="text-lg sm:text-xl font-bold truncate">{result.name}</div>
                   <div className="mt-2 space-y-1 text-xs sm:text-sm text-white/70">
+                    <div>✅ {result.points} Points</div>
                     <div>✅ {result.numSucceeded} solved</div>
                     <div>⚡ {result.totalAvgCPUTimeMs.toFixed(1)}ms avg</div>
                     <div>⏱ {(result.avgSubmissionTimeMs / 1000).toFixed(1)}s avg</div>
