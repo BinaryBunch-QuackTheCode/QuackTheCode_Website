@@ -17,7 +17,7 @@ export default function Scoreboard({ players, onNext, onEnd, role }) {
       totalSucc: count,
       avgCpuTimeMs: result.avgCpuTimeMs,
       submissionTimeMs: result.submissionTimeMs,
-      points: player.points
+      points: players.points
     });
   });
 
