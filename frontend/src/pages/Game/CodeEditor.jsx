@@ -150,8 +150,9 @@ function CodeEditor({LeetCode, onFinish}) {
     return (
         <div ref={containerRef} className="flex flex-col h-[100vh] w-[50vw]">
             {/* Code Editor - takes remaining space */}
-            <div className="flex-1 min-h-0">
+            <div className="flex-1 min-h-0 bg-[#1E1E1E]">
                 <Editor
+                    loading={null}
                     defaultValue={LeetCode.func_def}
                     height="100%"
                     defaultLanguage="python"

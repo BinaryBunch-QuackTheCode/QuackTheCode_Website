@@ -157,6 +157,7 @@ const getClientConnectionHandler = (executor, io, pendingCallbacks) => {
                 submissionTimeMs: null
               });
             }
+            rooms[pin].gameTimeoutId = null; 
           });
 
           io.to(pin).emit('score-results', rooms[pin].players);
@@ -218,8 +219,8 @@ const getClientConnectionHandler = (executor, io, pendingCallbacks) => {
           }
 
           if (rooms[pin].players.length === rooms[pin].numSucceeded) { 
-            console.log('Clearing timout id: ', rooms[pin].gameTimeoutId);
             clearTimeout(rooms[pin].gameTimeoutId);
+            rooms[pin].gameTimeoutId = null; 
             io.to(pin).emit('score-results', rooms[pin].players);
             io.to(pin).emit('set-page', {screen: 'scoreboard'});  
           } else {
@@ -279,6 +280,9 @@ const getClientConnectionHandler = (executor, io, pendingCallbacks) => {
         console.log("Deleting room");
         io.to(pin).emit('set-page', {screen: 'login'});
         io.to(pin).emit('game-error', "The host has left the game")
+        if (rooms[pin].gameTimeoutId !== null) { 
+          clearTimeout(rooms[pin].gameTimeoutId);
+        }
         delete rooms[pin];
         return;
       }

@@ -2,11 +2,11 @@ import { useEffect, useState } from "react";
 import "./StartGame.css";
 import socket from '../../services/socket';
 
-function StartGame({ onHostJoin, onBack, getRole}) {
+function StartGame({ onHostJoin, onBack, getRole, triggerNotification}) {
   const [pin, setPin] = useState("");
   const [name, setName] = useState("");
   const [starting, setStarting] = useState(false);
-  const [roundDuration, setRoundDuration] = useState(0);
+  const [roundDuration, setRoundDuration] = useState(20);
 
   useEffect(() => {
     socket.emit('create-pin', (uniquePin) => {
@@ -18,6 +18,10 @@ function StartGame({ onHostJoin, onBack, getRole}) {
     e.preventDefault();
     const trimmed = name.trim();
     if (!pin || !trimmed) return;
+    if (roundDuration <= 0) { 
+      triggerNotification("Error", "Round time must be greater than 0");
+      return;
+    }
     socket.emit('create-game', roundDuration, name, pin, (role) => {
       console.log('Role: ', role);
       getRole(role);
@@ -54,11 +58,11 @@ function StartGame({ onHostJoin, onBack, getRole}) {
           {starting ? "Starting..." : "Start Game"}
         </button>
       </form>
-      <div>
-      <p className='text-white mt-3'>Game time (Minutes)</p>
-      <input type="number" className="border-1 my-2 text-white text-center border-white" onChange={(e) => setRoundDuration(e.target.value * 60)}/>
+        <form class="max-w-sm mx-auto">
+            <label for="number-input" class="block mb-2.5 text-white mt-4 text-sm font-medium text-heading">Game Time (minutes):</label>
+            <input type="number" id="number-input" aria-describedby="helper-text-explanation" class="block w-full px-3 py-2.5 bg-neutral-secondary-medium border border-white text-white text-heading text-sm rounded-base focus:ring-brand focus:border-brand shadow-xs placeholder:text-body" placeholder="10" required onChange={(e) => setRoundDuration(e.target.value * 60)}/>
+        </form>
 
-      </div>
       <button type="button" className="font-['Press_Start_2P'] text-xs mt-4 bg-transparent border-none cursor-pointer text-white/75 underline hover:text-white" onClick={onBack}>
         Back
       </button>

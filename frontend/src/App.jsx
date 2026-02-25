@@ -26,6 +26,14 @@ function App() {
 
 
   const [role, setRole] = useState('');
+
+  const triggerNotification = (title, text) => {
+      setShowNotification({title, text})
+      setTimeout(() => {
+        setShowNotification(null);
+      }, 5000);
+  } 
+
   useEffect(() => {
     socket.connect();
     /*
@@ -57,10 +65,7 @@ function App() {
     })
 
     socket.on('game-error', (message) => {
-      setShowNotification({title: 'Error', text: message})
-      setTimeout(() => {
-        setShowNotification(null);
-      }, 5000);
+      triggerNotification('Error', message);
     });
 
     socket.on('players-remaining', (remaining) => {
@@ -125,6 +130,7 @@ function App() {
           }
         }
         getRole={(role) => setRole(role)}
+        triggerNotification={triggerNotification}
       />
     )} 
 
