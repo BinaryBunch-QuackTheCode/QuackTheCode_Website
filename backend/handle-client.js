@@ -209,11 +209,13 @@ const getClientConnectionHandler = (executor, io, pendingCallbacks) => {
           for (const player of rooms[pin].players) { 
             if (player.id === socket.id) { 
               console.log(message);
+              const submissionTimeMs = Date.now() - rooms[pin].gameStartTime; 
               player.results.push({
+                points: 1000 - Math.round(avgCpuTimeMs / 1000) - Math.round(submissionTimeMs / 1000),
                 succeeded,
                 avgCpuTimeMs,
-                submissionTimeMs: Date.now() - rooms[pin].gameStartTime,
-              })
+                submissionTimeMs
+              });
               break;
             }
           }
