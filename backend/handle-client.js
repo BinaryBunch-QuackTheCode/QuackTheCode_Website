@@ -136,6 +136,9 @@ const getClientConnectionHandler = (executor, io, pendingCallbacks) => {
         io.to(pin).emit('players-remaining', rooms[pin].players.length);
         rooms[pin].numSucceeded = 0;
         rooms[pin].roundNum++; 
+        rooms[pin].players.forEach(player => {
+            player.points = 0; 
+        });
         io.to(pin).emit('get-questions', rooms[pin].questions)
         const roundTime = rooms[pin].roundDuration
         console.log('round time: ', roundTime)
