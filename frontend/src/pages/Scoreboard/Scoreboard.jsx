@@ -65,7 +65,7 @@ export default function Scoreboard({ players, onNext, onEnd, role }) {
               {/* Right — Stats */}
               <div className="flex items-center gap-4 text-sm text-white/70">
                 <span className="flex items-center gap-1.5">
-                  <span className="text-emerald-400">⚡</span>
+                  <span className="text-emerald-400">💰</span>
                   {result.points} Points
                 </span>
                 <span className="flex items-center gap-1.5">

@@ -1,4 +1,4 @@
-export default function Podium({ players, onBackToLobby }) {
+export default function Podium({ players, onBackToLobby, role }) {
   const finalResults = [];
 
   players.forEach((player) => {
@@ -7,14 +7,17 @@ export default function Podium({ players, onBackToLobby }) {
       numSucceeded: 0,
       totalAvgCPUTimeMs: 0,
       avgSubmissionTimeMs: 0,
+      points: player.points || 0,
     };
 
     player.results.forEach((result) => {
+      console.log(result.points);
       if (result.succeeded) {
         finalResult.numSucceeded++;
         finalResult.totalAvgCPUTimeMs += result.avgCpuTimeMs;
         finalResult.avgSubmissionTimeMs += result.submissionTimeMs;
       }
+      console.log()
     });
 
     if (finalResult.numSucceeded > 0) {
@@ -24,6 +27,11 @@ export default function Podium({ players, onBackToLobby }) {
 
     finalResults.push(finalResult);
   });
+
+  //sort the final results from highest to lowest points
+  finalResults.sort((a,b) => {
+    return b.points - a.points;
+  })
 
   // Only take top 3
   const top3 = finalResults.slice(0, 3);
@@ -71,6 +79,7 @@ export default function Podium({ players, onBackToLobby }) {
                   <div className="text-4xl sm:text-5xl mb-2">{cfg.medal}</div>
                   <div className="text-lg sm:text-xl font-bold truncate">{result.name}</div>
                   <div className="mt-2 space-y-1 text-xs sm:text-sm text-white/70">
+                    <div>✅ {result.points} Points</div>
                     <div>✅ {result.numSucceeded} solved</div>
                     <div>⚡ {result.totalAvgCPUTimeMs.toFixed(1)}ms avg</div>
                     <div>⏱ {(result.avgSubmissionTimeMs / 1000).toFixed(1)}s avg</div>
@@ -98,12 +107,14 @@ export default function Podium({ players, onBackToLobby }) {
         </div>
 
         {/* Back button */}
+        {role &&
         <button
           onClick={onBackToLobby}
           className="bg-emerald-500 hover:bg-emerald-400 text-black font-semibold px-8 py-3 rounded-lg transition-all duration-150 active:scale-95 cursor-pointer shadow-lg shadow-emerald-500/25"
         >
           Back to Lobby
         </button>
+        }
       </div>
     </div>
   );
