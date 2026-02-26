@@ -10,8 +10,6 @@ export default function Scoreboard({ players, onNext, onEnd, role }) {
       }
     }
     const result = player.results[player.results.length - 1];
-    player.points = (player.points || 0) + (result.succeeded ? 1000 - Math.round(result.avgCpuTimeMs/1000) - Math.round(result.submissionTimeMs/1000) : 0);
-    console.log(player.points)
     roundResults.push({
       name: player.name,
       succeeded: result.succeeded,
@@ -65,7 +63,7 @@ export default function Scoreboard({ players, onNext, onEnd, role }) {
               {/* Right — Stats */}
               <div className="flex items-center gap-4 text-sm text-white/70">
                 <span className="flex items-center gap-1.5">
-                  <span className="text-emerald-400">💰</span>
+                  <span className="text-emerald-400">⚡</span>
                   {result.points} Points
                 </span>
                 <span className="flex items-center gap-1.5">

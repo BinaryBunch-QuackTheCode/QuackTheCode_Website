@@ -67,7 +67,7 @@ const getClientConnectionHandler = (executor, io, pendingCallbacks) => {
 
     socket.on('create-game', (roundDuration, name, pin, callback) => {
 
-      rooms[pin].players.push({ id: socket.id, role: 'host', name, results: [] });
+      rooms[pin].players.push({ id: socket.id, role: 'host', name, results: [], points: 0 });
       rooms[pin].roundDuration = roundDuration;
       rooms[pin].questions = leetcodeQuestion[Math.floor(Math.random() * leetcodeQuestion.length)];
       rooms[pin].hostId = socket.id; 
@@ -114,7 +114,7 @@ const getClientConnectionHandler = (executor, io, pendingCallbacks) => {
         }
       }
       socket.join(pin);
-      rooms[pin].players.push({ id: socket.id, role: 'player', name, results: [] });
+      rooms[pin].players.push({ id: socket.id, role: 'player', name, results: [], points: 0 });
       socket.pin = pin;
       const room = io.sockets.adapter.rooms.get(pin)
       const playerCount = room ? room.size : 0;
@@ -211,11 +211,11 @@ const getClientConnectionHandler = (executor, io, pendingCallbacks) => {
               console.log(message);
               const submissionTimeMs = Date.now() - rooms[pin].gameStartTime; 
               player.results.push({
-                points: 1000 - Math.round(avgCpuTimeMs / 1000) - Math.round(submissionTimeMs / 1000),
                 succeeded,
                 avgCpuTimeMs,
                 submissionTimeMs
               });
+              player.points += 1000 - Math.round(avgCpuTimeMs / 1000) - Math.round(submissionTimeMs / 1000);
               break;
             }
           }

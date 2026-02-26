@@ -7,7 +7,7 @@ export default function Podium({ players, onBackToLobby, role }) {
       numSucceeded: 0,
       totalAvgCPUTimeMs: 0,
       avgSubmissionTimeMs: 0,
-      points: player.points || 0,
+      points: player.points,
     };
 
     player.results.forEach((result) => {
