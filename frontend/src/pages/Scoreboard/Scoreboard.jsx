@@ -1,4 +1,4 @@
-export default function Scoreboard({ players, onNext, onEnd, role }) {
+export default function Scoreboard({ players, onNext, onEnd, onLeave, role }) {
   const roundResults = [];
   console.log('Players: ', players)
   players.forEach((player) => {
@@ -79,23 +79,31 @@ export default function Scoreboard({ players, onNext, onEnd, role }) {
           ))}
         </div>
 
-        {/* Host actions */}
-        {role === "host" && (
-          <div className="flex gap-4">
-            <button
-              onClick={onNext}
-              className="bg-emerald-500 hover:bg-emerald-400 text-black font-semibold px-7 py-3 rounded-lg transition-all duration-150 active:scale-95 cursor-pointer shadow-lg shadow-emerald-500/25"
-            >
-              Next Question
-            </button>
-            <button
-              onClick={onEnd}
-              className="bg-white/10 hover:bg-white/15 border border-white/20 font-semibold px-7 py-3 rounded-lg transition-all duration-150 active:scale-95 cursor-pointer backdrop-blur-md"
-            >
-              End Game
-            </button>
-          </div>
-        )}
+        {/* Actions */}
+        <div className="flex flex-wrap justify-center gap-4">
+          {role === "host" && (
+            <>
+              <button
+                onClick={onNext}
+                className="bg-emerald-500 hover:bg-emerald-400 text-black font-semibold px-7 py-3 rounded-lg transition-all duration-150 active:scale-95 cursor-pointer shadow-lg shadow-emerald-500/25"
+              >
+                Next Question
+              </button>
+              <button
+                onClick={onEnd}
+                className="bg-white/10 hover:bg-white/15 border border-white/20 font-semibold px-7 py-3 rounded-lg transition-all duration-150 active:scale-95 cursor-pointer backdrop-blur-md"
+              >
+                End Game
+              </button>
+            </>
+          )}
+          <button
+            onClick={onLeave}
+            className="bg-white/10 hover:bg-white/15 border border-white/20 font-semibold px-7 py-3 rounded-lg transition-all duration-150 active:scale-95 cursor-pointer backdrop-blur-md"
+          >
+            Leave Game
+          </button>
+        </div>
       </div>
     </div>
   );

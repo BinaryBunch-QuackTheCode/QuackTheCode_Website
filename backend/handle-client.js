@@ -24,6 +24,37 @@ const getClientConnectionHandler = (executor, io, pendingCallbacks) => {
   return async (socket) => {
     console.log('User Connected:', socket.id); //users get given a random id when they get connect
 
+    const cleanupPlayerFromRoom = () => {
+      const pin = socket.pin;
+      if (!pin) {
+        console.log('No pin found for socket');
+        return;
+      }
+      if (!rooms[pin]) {
+        console.log('Room with pin:', pin, 'does not exist');
+        return;
+      }
+
+      if (!rooms[pin].hostId || socket.id === rooms[pin].hostId) {
+        console.log('Host leaving — deleting room', pin);
+        io.to(pin).emit('set-page', { screen: 'login' });
+        io.to(pin).emit('game-error', 'The host has left the game');
+        if (rooms[pin].gameTimeoutId !== null) {
+          clearTimeout(rooms[pin].gameTimeoutId);
+        }
+        delete rooms[pin];
+      } else {
+        rooms[pin].players = rooms[pin].players.filter((p) => p.id !== socket.id);
+        const room = io.sockets.adapter.rooms.get(pin);
+        const playerCount = room ? room.size - 1 : 0;
+        io.to(pin).emit('player-count', playerCount);
+        io.to(pin).emit('lobby-names', rooms[pin].players);
+      }
+
+      socket.leave(pin);
+      socket.pin = null;
+    };
+
 
 
     /* --------------------- Create a pin for the game ---------------- */ 
@@ -141,12 +172,9 @@ const getClientConnectionHandler = (executor, io, pendingCallbacks) => {
         console.log('round time: ', roundTime)
         const minute = roundTime * 1000
 
-        // Previer -> Game -> Scoreboard 
-        io.to(pin).emit('set-page', {screen: 'preview'}); 
-
         rooms[pin].gameStartTime = Date.now();
 
-        startTimerToScreen(io, 1000, pin, 'game');
+        io.to(pin).emit('set-page', {screen: 'game'});
         rooms[pin].gameTimeoutId = startTimerToScreen(io, minute, pin, 'scoreboard', () => {
           rooms[pin].players.forEach(player => {
             // mark unfinished players as failed
@@ -261,41 +289,19 @@ const getClientConnectionHandler = (executor, io, pendingCallbacks) => {
     })
 
 
-    /* ---------------------------- Disconnect------------------------- */ 
+    /* ---------------------------- Leave Game ------------------------- */
+
+    socket.on('leave-game', () => {
+      console.log(`Socket ${socket.id} is leaving the game`);
+      cleanupPlayerFromRoom();
+    });
+
+
+    /* ---------------------------- Disconnect------------------------- */
 
     socket.on('disconnect', (reason) => {
-
-      console.log(`${socket.id} because of: ${reason}`);
-
-      const pin = socket.pin;
-      if (!pin) {
-        console.log('No pin found for socket');
-        return;
-      }
-
-      if(!rooms[pin]) {
-        console.log('Room with pin: ', pin,' does not exist');
-        return;
-      }
-
-      // Delete room if host leaves  
-      if (!rooms[pin].hostId || socket.id === rooms[pin].hostId) { 
-        console.log("Deleting room");
-        io.to(pin).emit('set-page', {screen: 'login'});
-        io.to(pin).emit('game-error', "The host has left the game")
-        if (rooms[pin].gameTimeoutId !== null) { 
-          clearTimeout(rooms[pin].gameTimeoutId);
-        }
-        delete rooms[pin];
-        return;
-      }
-
-      rooms[pin].players = rooms[pin].players.filter((player) => socket.id !== player.id);
-      const room_len = io.sockets.adapter.rooms.get(pin);
-      const playerCount = room_len ? room_len.size : 0;
-      io.to(pin).emit('player-count', playerCount);
-      io.to(pin).emit('lobby-names', rooms[pin].players);
-
+      console.log(`${socket.id} disconnected because of: ${reason}`);
+      cleanupPlayerFromRoom();
     })
   }
 }

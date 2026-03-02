@@ -31,41 +31,51 @@ function StartGame({ onHostJoin, onBack, getRole, triggerNotification}) {
   }
 
   return (
-    <div className="h-screen flex flex-col justify-center items-center bg-[#232323]">
-      <h1 className="text-white text-5xl mb-8 font-['Press_Start_2P']">QuackTheCode</h1>
+    <div className="relative min-h-[100dvh] w-full text-white">
+      {/* Animated background */}
+      <div className="absolute inset-0 z-0 bg-animated" />
+      {/* Noise overlay */}
+      <div className="absolute inset-0 z-10 bg-noise opacity-20 mix-blend-overlay pointer-events-none" />
+      <div className="absolute inset-0 z-20 bg-pixels opacity-35 pointer-events-none" />
 
-      <div className="font-['Press_Start_2P'] text-sm text-white/75 mb-4">Your Game PIN:</div>
+      {/* Content */}
+      <div className="relative z-30 min-h-[100dvh] flex flex-col justify-center items-center">
+        <h1 className="text-white text-5xl mb-8 font-['Press_Start_2P']">QuackTheCode</h1>
 
-      <div className="font-['Press_Start_2P'] text-2xl tracking-wider text-black bg-white border-4 border-black rounded-none px-5 py-3 mb-6 min-w-[200px] text-center shadow-[3px_3px_0_rgba(0,0,0,0.2)]" aria-label="Game PIN">
-        {pin || "......"}
-      </div>
+        <div className="font-['Press_Start_2P'] text-sm text-white/75 mb-4">Your Game PIN:</div>
 
-      <form className="flex flex-col gap-3 items-center" onSubmit={handleStartGame}>
-        <input
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Your Name"
-          className="px-3 py-3 text-center rounded-none border-4 border-black bg-white w-56 outline-none font-['Press_Start_2P'] text-sm placeholder:text-gray-400 placeholder:text-xs focus:border-green-600 focus:ring-2 focus:ring-green-300"
-          maxLength={20}
-        />
+        <div className="font-['Press_Start_2P'] text-2xl tracking-wider text-black bg-white border-4 border-black rounded-none px-5 py-3 mb-6 min-w-[200px] text-center shadow-[3px_3px_0_rgba(0,0,0,0.2)]" aria-label="Game PIN">
+          {pin || "......"}
+        </div>
 
-        <button
-          type="submit"
-          className="font-['Press_Start_2P'] text-xs px-5 py-3 bg-green-600 text-white border-4 border-black rounded-none cursor-pointer hover:bg-green-700 active:translate-x-0.5 active:translate-y-0.5 w-56 shadow-[4px_4px_0_rgba(0,0,0,0.3)] disabled:opacity-50 disabled:cursor-not-allowed"
-          disabled={starting || !pin || !name.trim()}
-        >
-          {starting ? "Starting..." : "Start Game"}
-        </button>
-      </form>
-        <form class="max-w-sm mx-auto">
-            <label for="number-input" class="block mb-2.5 text-white mt-4 text-sm font-medium text-heading">Game Time (minutes):</label>
-            <input type="number" id="number-input" aria-describedby="helper-text-explanation" class="block w-full px-3 py-2.5 bg-neutral-secondary-medium border border-white text-white text-heading text-sm rounded-base focus:ring-brand focus:border-brand shadow-xs placeholder:text-body" placeholder="10" required onChange={(e) => setRoundDuration(e.target.value * 60)}/>
+        <form className="flex flex-col gap-3 items-center" onSubmit={handleStartGame}>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Your Name"
+            className="px-3 py-3 text-center rounded-none border-4 border-black bg-white text-black w-56 outline-none font-['Press_Start_2P'] text-sm placeholder:text-gray-400 placeholder:text-xs focus:border-green-600 focus:ring-2 focus:ring-green-300"
+            maxLength={20}
+          />
+
+          <button
+            type="submit"
+            className="font-['Press_Start_2P'] text-xs px-5 py-3 bg-green-600 text-white border-4 border-black rounded-none cursor-pointer hover:bg-green-700 active:translate-x-0.5 active:translate-y-0.5 w-56 shadow-[4px_4px_0_rgba(0,0,0,0.3)] disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={starting || !pin || !name.trim()}
+          >
+            {starting ? "Starting..." : "Start Game"}
+          </button>
         </form>
 
-      <button type="button" className="font-['Press_Start_2P'] text-xs mt-4 bg-transparent border-none cursor-pointer text-white/75 underline hover:text-white" onClick={onBack}>
-        Back
-      </button>
+        <form className="max-w-sm mx-auto">
+          <label htmlFor="number-input" className="block mb-2.5 text-white mt-4 text-sm font-medium">Game Time (minutes):</label>
+          <input type="number" id="number-input" className="block w-full px-3 py-2.5 bg-white/10 border border-white/30 text-white text-sm rounded-md focus:ring-green-500 focus:border-green-500 placeholder:text-white/50" placeholder="10" required onChange={(e) => setRoundDuration(e.target.value * 60)}/>
+        </form>
+
+        <button type="button" className="font-['Press_Start_2P'] text-xs mt-4 bg-transparent border-none cursor-pointer text-white/75 underline hover:text-white" onClick={onBack}>
+          Back
+        </button>
+      </div>
     </div>
   );
 }

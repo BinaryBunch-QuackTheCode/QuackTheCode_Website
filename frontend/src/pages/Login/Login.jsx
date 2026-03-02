@@ -32,53 +32,62 @@ function Login({ onJoin, onStartGame }) {
   };
 
   return (
-    <div className="h-screen flex flex-col justify-center items-center bg-[#232323]">
-      <h1 className="text-white text-5xl mb-8 font-['Press_Start_2P']">QuackTheCode</h1>
+    <div className="relative min-h-[100dvh] w-full text-white">
+      {/* Animated background */}
+      <div className="absolute inset-0 z-0 bg-animated" />
+      {/* Noise overlay */}
+      <div className="absolute inset-0 z-10 bg-noise opacity-20 mix-blend-overlay pointer-events-none" />
+      <div className="absolute inset-0 z-20 bg-pixels opacity-35 pointer-events-none" />
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-3 items-center">
-        {step === "pin" ? (
-          <input
-            type="text"
-            value={pin}
-            onChange={(e) => setPin(e.target.value)}
-            placeholder="Game PIN"
-            className="px-3 py-3 text-2xl text-center rounded-none border-4 border-black bg-white w-56 outline-none font-['Press_Start_2P'] text-sm placeholder:text-gray-400 placeholder:text-xs focus:border-green-600 focus:ring-2 focus:ring-green-300"
-            maxLength={6}
-          />
-        ) : (
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Enter your name"
-            className="px-3 py-3 text-2xl text-center rounded-none border-4 border-black bg-white w-56 outline-none font-['Press_Start_2P'] text-sm placeholder:text-gray-400 placeholder:text-xs focus:border-green-600 focus:ring-2 focus:ring-green-300"
-            maxLength={20}
-          />
-        )}
-        <label className="flex items-center gap-2 text-white font-['Press_Start_2P'] text-xs cursor-pointer">
-          <input
-            type="checkbox"
-            checked={musicEnabled}
-            onChange={(e) => setMusicEnabled(e.target.checked)}
-            className="w-4 h-4 accent-green-600"
-          />
-          <span>Music</span>
-        </label>
+      {/* Content */}
+      <div className="relative z-30 min-h-[100dvh] flex flex-col justify-center items-center">
+        <h1 className="text-white text-5xl mb-8 font-['Press_Start_2P']">QuackTheCode</h1>
 
-        <button type="submit" className="font-['Press_Start_2P'] text-xs px-5 py-3 bg-green-600 text-white border-4 border-black rounded-none cursor-pointer hover:bg-green-700 active:translate-x-0.5 active:translate-y-0.5 w-56 shadow-[4px_4px_0_rgba(0,0,0,0.3)]">
-          {step === "pin" ? "Enter PIN" : "Join Game"}
+        <form onSubmit={handleSubmit} className="flex flex-col gap-3 items-center text-black">
+          {step === "pin" ? (
+            <input
+              type="text"
+              value={pin}
+              onChange={(e) => setPin(e.target.value)}
+              placeholder="Game PIN"
+              className="px-3 py-3 text-2xl text-center rounded-none border-4 border-black bg-white w-56 outline-none font-['Press_Start_2P'] text-sm placeholder:text-gray-400 placeholder:text-xs focus:border-green-600 focus:ring-2 focus:ring-green-300"
+              maxLength={6}
+            />
+          ) : (
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Enter your name"
+              className="px-3 py-3 text-2xl text-center rounded-none border-4 border-black bg-white w-56 outline-none font-['Press_Start_2P'] text-sm placeholder:text-gray-400 placeholder:text-xs focus:border-green-600 focus:ring-2 focus:ring-green-300"
+              maxLength={20}
+            />
+          )}
+          <label className="flex items-center gap-2 text-white font-['Press_Start_2P'] text-xs cursor-pointer">
+            <input
+              type="checkbox"
+              checked={musicEnabled}
+              onChange={(e) => setMusicEnabled(e.target.checked)}
+              className="w-4 h-4 accent-green-600"
+            />
+            <span>Music</span>
+          </label>
+
+          <button type="submit" className="font-['Press_Start_2P'] text-xs px-5 py-3 bg-green-600 text-white border-4 border-black rounded-none cursor-pointer hover:bg-green-700 active:translate-x-0.5 active:translate-y-0.5 w-56 shadow-[4px_4px_0_rgba(0,0,0,0.3)]">
+            {step === "pin" ? "Enter PIN" : "Join Game"}
+          </button>
+        </form>
+
+        <p className="font-['Press_Start_2P'] text-sm text-gray-400 my-3">OR</p>
+
+        <button
+          type="button"
+          className="font-['Press_Start_2P'] text-xs px-5 py-3 bg-green-600 text-white border-4 border-black rounded-none cursor-pointer hover:bg-green-700 active:translate-x-0.5 active:translate-y-0.5 w-56 shadow-[4px_4px_0_rgba(0,0,0,0.3)]"
+          onClick={() => onStartGame(musicEnabled)}
+        >
+          Start a Game
         </button>
-      </form>
-
-      <p className="font-['Press_Start_2P'] text-sm text-gray-700 my-3">OR</p>
-
-      <button
-        type="button"
-        className="font-['Press_Start_2P'] text-xs px-5 py-3 bg-green-600 text-white border-4 border-black rounded-none cursor-pointer hover:bg-green-700 active:translate-x-0.5 active:translate-y-0.5 w-56 shadow-[4px_4px_0_rgba(0,0,0,0.3)]"
-        onClick={onStartGame}
-      >
-        Start a Game
-      </button>
+      </div>
     </div>
   );
 }
