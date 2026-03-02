@@ -89,6 +89,22 @@ function App() {
 
   const [showNotification, setShowNotification] = useState(null)
 
+  const handleLeaveGame = () => {
+    socket.emit('leave-game');
+    setQuestions(null);
+    setScreen('login');
+    setGamePin('');
+    setPlayerCount(1);
+    setLobbyNames([]);
+    setUserName('');
+    setRole('');
+    setTime(0);
+    setDuration(0);
+    setPlayersRemaining(0);
+    setScoreResults([]);
+    setShowNotification(null);
+  };
+
   return (
     <div>
       { showNotification && 
@@ -111,11 +127,6 @@ function App() {
           setScreen("startGame");
         }}
       />
-    )}
-    {screen === "preview" && (
-      <div className='flex justify-center items-center bg-[#232323] min-h-screen text-white'>
-        <Spinner/> 
-      </div>
     )}
     {screen === "startGame" && (
       <StartGame
@@ -141,6 +152,7 @@ function App() {
         onStart={() => {
           socket.emit('start-game', gamePin);
         }}
+        onLeave={handleLeaveGame}
         playerCount={playerCount}
         userName={userName}
         musicEnabled={musicEnabled}
@@ -151,7 +163,7 @@ function App() {
         questions ? (
           <div className='flex flex-col xl:flex-row'>
             <CodeEditor LeetCode={questions} onFinish={() => {}}/>
-            <LeetQuestion LeetInfo={questions} endTime={time} duration={duration} playersRemaining={playersRemaining}/>
+            <LeetQuestion LeetInfo={questions} endTime={time} duration={duration} playersRemaining={playersRemaining} onLeave={handleLeaveGame}/>
           </div>
         ) : (
             <Spinner/> 
@@ -159,8 +171,11 @@ function App() {
       )}
 
       {screen === "submitted" && (
-      <div className='flex justify-center items-center bg-[#232323] min-h-screen text-white'>
-          Successfully Submitted! Hang tight while others complete the question
+      <div className='flex flex-col justify-center items-center bg-[#232323] min-h-screen text-white gap-6'>
+          <p>Successfully Submitted! Hang tight while others complete the question</p>
+          <button onClick={handleLeaveGame} className="px-5 py-2 rounded-md bg-white/10 hover:bg-white/15 border border-white/20 text-white/80 font-medium backdrop-blur-md transition-all active:scale-95">
+            Leave Game
+          </button>
       </div>
       )}
       
@@ -177,6 +192,7 @@ function App() {
                 socket.emit('switch-screen', gamePin, 'podium')
              }
          }}
+         onLeave={handleLeaveGame}
          role={role}
        />
      )}
@@ -189,6 +205,7 @@ function App() {
                  socket.emit('back-to-lobby', gamePin);
              }
          }}
+         onLeave={handleLeaveGame}
          role={role}
        />
      )}

@@ -5,10 +5,20 @@ import CharacterSelect from "./CharacterSelect";
 import useLoopingAudio from "../../hooks/useLoopingAudio";
 import lobbyMusic from "../../assets/audio/Lobby_x1.mp3";
 
-function Lobby({ pin, userName, lobbyNames, onStart, playerCount = 1, musicEnabled = true, role}) {
+function Lobby({ pin, userName, lobbyNames, onStart, onLeave, playerCount = 1, musicEnabled = true, role}) {
   const [dots, setDots] = useState("");
-  const { blocked, enable } = useLoopingAudio(lobbyMusic, musicEnabled, { volume: 0.35 });
+  const [musicOn, setMusicOn] = useState(musicEnabled);
+  const { blocked, enable } = useLoopingAudio(lobbyMusic, musicOn, { volume: 0.35 });
   const [drawerOpen, setDrawerOpen] = useState(false);
+
+  const handleMusicToggle = async () => {
+    if (!musicOn || blocked) {
+      await enable();
+      setMusicOn(true);
+    } else {
+      setMusicOn(false);
+    }
+  };
   const [selections, setSelections] = useState({});
   const myId = socket.id;
   // keeps teammate line safe + avoids undefined entries
@@ -36,14 +46,12 @@ function Lobby({ pin, userName, lobbyNames, onStart, playerCount = 1, musicEnabl
 
   return (
   <div className="relative min-h-[100dvh] w-full text-white">
-    {blocked && musicEnabled && (
-      <button
-        onClick={enable}
-        className="fixed top-4 right-4 z-[999] px-4 py-2 rounded-md bg-white/20 border border-white/30 backdrop-blur-md"
-      >
-        Enable Music 🔊
-      </button>
-    )}
+    <button
+      onClick={handleMusicToggle}
+      className="fixed top-4 right-4 z-[999] px-4 py-2 rounded-md bg-white/20 hover:bg-white/30 border border-white/30 backdrop-blur-md transition-all active:scale-95"
+    >
+      {musicOn && !blocked ? "Disable Music 🔇" : "Enable Music 🔊"}
+    </button>
     
     {/* Animated background */}
     <div className="absolute inset-0 z-0 bg-animated" />
@@ -157,18 +165,23 @@ function Lobby({ pin, userName, lobbyNames, onStart, playerCount = 1, musicEnabl
       </div>
 
       {/* Bottom */}
-      {role === 'host' && (
-      <div className="flex justify-center">
+      <div className="flex justify-center items-center gap-4">
+        {role === 'host' && (
+          <button
+            onClick={onStart}
+            className="bg-green-500 hover:bg-green-400 text-black font-semibold px-8 py-3 rounded-lg
+                       transition-transform active:scale-95"
+          >
+            Start Game?
+          </button>
+        )}
         <button
-          onClick={onStart}
-          className="bg-green-500 hover:bg-green-400 text-black font-semibold px-8 py-3 rounded-lg
-                     transition-transform active:scale-95"
+          onClick={onLeave}
+          className="px-8 py-3 rounded-lg bg-white/10 hover:bg-white/15 border border-white/20 text-white/80 font-semibold backdrop-blur-md transition-all active:scale-95"
         >
-          Start Game?
+          Leave Game
         </button>
       </div>
-      )
-      }
     </div>
   </div>
 );
