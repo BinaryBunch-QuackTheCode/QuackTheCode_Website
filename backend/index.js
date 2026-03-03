@@ -52,7 +52,7 @@ const main = () => {
   */
   const io = new Server(server, {
     cors: {
-      origin: ['http://localhost:5173', 'http://44.251.240.201:3000'],
+      origin: ['http://localhost:5173', 'https://quackthecode.me'],
       methods: ['get', 'post']
     }
   })
