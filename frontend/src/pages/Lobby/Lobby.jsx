@@ -19,14 +19,13 @@ function Lobby({ pin, userName, lobbyNames, onStart, onLeave, playerCount = 1, m
       setMusicOn(false);
     }
   };
-  const [selections, setSelections] = useState({});
   const myId = socket.id;
   // keeps teammate line safe + avoids undefined entries
   const playerName = {};
   const safeLobbyNames = (lobbyNames || []).filter(Boolean);
 
   const handlePick = (slotIndex) => {
-    setSelections((prev) => ({ ...prev, [myId]: slotIndex }));
+    socket.emit('select-character', slotIndex);
   };
 
   useEffect(() => {
@@ -43,6 +42,14 @@ function Lobby({ pin, userName, lobbyNames, onStart, onLeave, playerCount = 1, m
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [onStart]);
+
+  // Derive character selections from server-broadcast lobbyNames
+  const derivedSelections = {};
+  safeLobbyNames.forEach((p) => {
+    if (p.characterIndex !== null && p.characterIndex !== undefined) {
+      derivedSelections[p.id] = p.characterIndex;
+    }
+  });
 
   return (
   <div className="relative min-h-[100dvh] w-full text-white">
@@ -154,7 +161,7 @@ function Lobby({ pin, userName, lobbyNames, onStart, onLeave, playerCount = 1, m
           <CharacterSelect
             lobbyNames={lobbyNames}
             userName={userName}
-            selections={selections}
+            selections={derivedSelections}
             myId={myId}
             onPick={handlePick}
           />
