@@ -1,3 +1,5 @@
+import { characterImages } from "../../assets/characters";
+
 export default function Podium({ players, onBackToLobby, onLeave, role }) {
   const finalResults = [];
 
@@ -8,6 +10,7 @@ export default function Podium({ players, onBackToLobby, onLeave, role }) {
       totalAvgCPUTimeMs: 0,
       avgSubmissionTimeMs: 0,
       points: player.points,
+      characterIndex: player.characterIndex,
     };
 
     player.results.forEach((result) => {
@@ -77,6 +80,13 @@ export default function Podium({ players, onBackToLobby, onLeave, role }) {
                   ].join(" ")}
                 >
                   <div className="text-4xl sm:text-5xl mb-2">{cfg.medal}</div>
+                  {result.characterIndex != null && characterImages[result.characterIndex] && (
+                    <img
+                      src={characterImages[result.characterIndex]}
+                      alt="character"
+                      className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-contain bg-white/10 border-2 border-white/20 p-1 mx-auto mb-2"
+                    />
+                  )}
                   <div className="text-lg sm:text-xl font-bold truncate">{result.name}</div>
                   <div className="mt-2 space-y-1 text-xs sm:text-sm text-white/70">
                     <div>✅ {result.points} Points</div>

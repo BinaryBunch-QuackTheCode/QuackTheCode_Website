@@ -1,3 +1,5 @@
+import { characterImages } from "../../assets/characters";
+
 export default function Scoreboard({ players, onNext, onEnd, onLeave, role }) {
   const roundResults = [];
   console.log('Players: ', players)
@@ -16,7 +18,8 @@ export default function Scoreboard({ players, onNext, onEnd, onLeave, role }) {
       totalSucc: count,
       avgCpuTimeMs: result.avgCpuTimeMs,
       submissionTimeMs: result.submissionTimeMs,
-      points: player.points
+      points: player.points,
+      characterIndex: player.characterIndex
     });
   });
 
@@ -45,8 +48,15 @@ export default function Scoreboard({ players, onNext, onEnd, onLeave, role }) {
               key={idx}
               className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-0 justify-between bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl px-5 py-4 transition-colors duration-200"
             >
-              {/* Left — Name + Badge */}
+              {/* Left — Avatar + Name + Badge */}
               <div className="flex items-center gap-3">
+                {result.characterIndex != null && characterImages[result.characterIndex] && (
+                  <img
+                    src={characterImages[result.characterIndex]}
+                    alt="character"
+                    className="w-9 h-9 rounded-full object-contain bg-white/10 border border-white/15 p-0.5"
+                  />
+                )}
                 <span className="text-lg sm:text-xl font-bold">{result.name}</span>
                 <span
                   className={[
