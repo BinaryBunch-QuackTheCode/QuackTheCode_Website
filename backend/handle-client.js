@@ -1,14 +1,14 @@
 
 import { requestCodeExecution } from './executor-comms.js';
 import { leetcodeQuestion } from './leetcode.js';
-import { startTimerToScreen , generateUniquePin } from './game-utils.js';
+import { startTimerToScreen, generateUniquePin } from './game-utils.js';
 
 
 /* Return the function callback to be used when a user socket is created 
  */
 const getClientConnectionHandler = (executor, io, pendingCallbacks) => {
 
-  /* Handle Global State here */ 
+  /* Handle Global State here */
 
   /* Room: pin -> 
    * {
@@ -18,8 +18,8 @@ const getClientConnectionHandler = (executor, io, pendingCallbacks) => {
    *  hostId: str
    *  }
    *
-   */ 
-  const rooms = {};  
+   */
+  const rooms = {};
 
   return async (socket) => {
     console.log('User Connected:', socket.id); //users get given a random id when they get connect
@@ -57,7 +57,7 @@ const getClientConnectionHandler = (executor, io, pendingCallbacks) => {
 
 
 
-    /* --------------------- Create a pin for the game ---------------- */ 
+    /* --------------------- Create a pin for the game ---------------- */
 
     socket.on('create-pin', (callback) => {
       const pin = generateUniquePin(rooms);
@@ -65,15 +65,15 @@ const getClientConnectionHandler = (executor, io, pendingCallbacks) => {
 
       // players: list[{id, role, name}]
       rooms[pin] = {
-        players: [], 
-        roundDuration: 0, 
-        questions: [], 
-        hostId: null, 
+        players: [],
+        roundDuration: 0,
+        questions: [],
+        hostId: null,
         gameStartTime: null,
         numSucceeded: 0,
         roundNum: 0,
         gameTimeoutId: null
-      };  
+      };
       socket.join(pin);
       callback(pin);  // Send PIN back to the host that requested it
     });
@@ -81,11 +81,11 @@ const getClientConnectionHandler = (executor, io, pendingCallbacks) => {
 
 
 
-    /* -------------------- Switch screens --------------------- */ 
+    /* -------------------- Switch screens --------------------- */
 
     socket.on('switch-screen', (pin, screen) => {
       if (rooms[pin].hostId === socket.id) {
-        io.to(pin).emit('set-page', {screen: screen});
+        io.to(pin).emit('set-page', { screen: screen });
       } else {
         console.error(`User with id ${socket.id} attempted to switch screens with invalid permission`);
       }
@@ -94,14 +94,14 @@ const getClientConnectionHandler = (executor, io, pendingCallbacks) => {
 
 
 
-    /* -------------------- Create Game ---------------------- */ 
+    /* -------------------- Create Game ---------------------- */
 
     socket.on('create-game', (roundDuration, name, pin, callback) => {
 
-      rooms[pin].players.push({ id: socket.id, role: 'host', name, results: [], points: 0 });
+      rooms[pin].players.push({ id: socket.id, role: 'host', name, results: [], points: 0, characterIndex: null });
       rooms[pin].roundDuration = roundDuration;
       rooms[pin].questions = leetcodeQuestion[Math.floor(Math.random() * leetcodeQuestion.length)];
-      rooms[pin].hostId = socket.id; 
+      rooms[pin].hostId = socket.id;
 
       console.log('Created new game with PIN: ', pin);
       callback('host');
@@ -110,15 +110,15 @@ const getClientConnectionHandler = (executor, io, pendingCallbacks) => {
       io.to(pin).emit('player-count', playerCount);
       io.to(pin).emit('lobby-names', rooms[pin].players);
     });
-    
 
 
 
-    /* --------------------- Check Pin ------------------ */ 
+
+    /* --------------------- Check Pin ------------------ */
 
     socket.on('check-pin', (candidatePin, callback) => {
-      const isValid = candidatePin in rooms; 
-      if (!isValid) { 
+      const isValid = candidatePin in rooms;
+      if (!isValid) {
         socket.emit('game-error', `Room with pin ${candidatePin} does not exist`);
       }
       console.log(`Socket ${socket.id} inputed a ${isValid} pin`);
@@ -127,7 +127,7 @@ const getClientConnectionHandler = (executor, io, pendingCallbacks) => {
 
 
 
-    /* ------------------ Join Game ------------------------ */ 
+    /* ------------------ Join Game ------------------------ */
 
     socket.on('join-game', (pin, name, callback) => {
       if (!rooms[pin]) {
@@ -136,8 +136,8 @@ const getClientConnectionHandler = (executor, io, pendingCallbacks) => {
         console.error('Player tried to join game that does not exist');
         return;
       }
-      for (const player of rooms[pin].players) { 
-        if (player.name === name) { 
+      for (const player of rooms[pin].players) {
+        if (player.name === name) {
           socket.emit('game-error', `Name ${name} already exists in room`);
           callback(false);
           console.error('Player tried to join game with duplicate name');
@@ -145,7 +145,7 @@ const getClientConnectionHandler = (executor, io, pendingCallbacks) => {
         }
       }
       socket.join(pin);
-      rooms[pin].players.push({ id: socket.id, role: 'player', name, results: [], points: 0 });
+      rooms[pin].players.push({ id: socket.id, role: 'player', name, results: [], points: 0, characterIndex: null });
       socket.pin = pin;
       const room = io.sockets.adapter.rooms.get(pin)
       const playerCount = room ? room.size : 0;
@@ -155,18 +155,46 @@ const getClientConnectionHandler = (executor, io, pendingCallbacks) => {
     });
 
 
+    /* ------------------ Select Character ------------------ */
 
-    /* ------------------------- Start Game ------------------------ */ 
+    socket.on('select-character', (characterIndex) => {
+      const pin = socket.pin;
+      if (!pin || !rooms[pin]) return;
+
+      const players = rooms[pin].players;
+
+      // prevent duplicate character picks
+      const alreadyTaken = players.some(
+        (p) => p.id !== socket.id && p.characterIndex === characterIndex
+      );
+
+      if (alreadyTaken) {
+        socket.emit('game-error', 'Character already taken');
+        return;
+      }
+
+      // assign character to player
+      const player = players.find((p) => p.id === socket.id);
+      if (!player) return;
+
+      player.characterIndex = characterIndex;
+
+      // update lobby for everyone
+      io.to(pin).emit('lobby-names', players);
+    });
+
+
+    /* ------------------------- Start Game ------------------------ */
 
     socket.on('start-game', (pin) => {
       console.log(rooms[pin]);
-      console.log('Host ID: ' + rooms[pin].hostId); 
-      console.log('Player ID: ' + socket.id); 
+      console.log('Host ID: ' + rooms[pin].hostId);
+      console.log('Player ID: ' + socket.id);
 
-      if (rooms[pin].hostId === socket.id) { 
+      if (rooms[pin].hostId === socket.id) {
         io.to(pin).emit('players-remaining', rooms[pin].players.length);
         rooms[pin].numSucceeded = 0;
-        rooms[pin].roundNum++; 
+        rooms[pin].roundNum++;
         io.to(pin).emit('get-questions', rooms[pin].questions)
         const roundTime = rooms[pin].roundDuration
         console.log('round time: ', roundTime)
@@ -174,18 +202,18 @@ const getClientConnectionHandler = (executor, io, pendingCallbacks) => {
 
         rooms[pin].gameStartTime = Date.now();
 
-        io.to(pin).emit('set-page', {screen: 'game'});
+        io.to(pin).emit('set-page', { screen: 'game' });
         rooms[pin].gameTimeoutId = startTimerToScreen(io, minute, pin, 'scoreboard', () => {
           rooms[pin].players.forEach(player => {
             // mark unfinished players as failed
-            if (player.results.length !== rooms[pin].roundNum) { 
+            if (player.results.length !== rooms[pin].roundNum) {
               player.results.push({
-                succeeded: false, 
+                succeeded: false,
                 avgCpuTimeMs: null,
                 submissionTimeMs: null
               });
             }
-            rooms[pin].gameTimeoutId = null; 
+            rooms[pin].gameTimeoutId = null;
           });
 
           io.to(pin).emit('score-results', rooms[pin].players);
@@ -197,20 +225,21 @@ const getClientConnectionHandler = (executor, io, pendingCallbacks) => {
     })
 
 
-    /* ----------------- Back to lobby ------------- */ 
+    /* ----------------- Back to lobby ------------- */
 
     socket.on('back-to-lobby', (pin) => {
       // reset game state
-      rooms[pin].roundNum = 0; 
+      rooms[pin].roundNum = 0;
       rooms[pin].players.forEach(player => {
         player.results = [];
-        player.points = 0; 
+        player.points = 0;
+        player.characterIndex = null;
       })
-      io.to(pin).emit('set-page', {screen: 'lobby'});
+      io.to(pin).emit('set-page', { screen: 'lobby' });
     });
 
 
-    /* ---------------------------- User Submission ------------------------- */ 
+    /* ---------------------------- User Submission ------------------------- */
 
     socket.on('user-submission', (code, callback) => {
       const pin = socket.pin;
@@ -218,27 +247,27 @@ const getClientConnectionHandler = (executor, io, pendingCallbacks) => {
       // Store callback so we can call it when executor responds
 
       const onResult = (message) => {
-        let succeeded = true; 
-        let avgCpuTimeMs = 0; 
+        let succeeded = true;
+        let avgCpuTimeMs = 0;
         if (message.status !== 'ERROR') {
-          for (const result of message.results) { 
-            if (!result.succeeded) { 
-              succeeded = false; 
+          for (const result of message.results) {
+            if (!result.succeeded) {
+              succeeded = false;
               break;
             }
-            avgCpuTimeMs += result.cpu_time_ms; 
+            avgCpuTimeMs += result.cpu_time_ms;
           }
-          if (message.results.length > 0) { 
-            avgCpuTimeMs /= message.results.length; 
+          if (message.results.length > 0) {
+            avgCpuTimeMs /= message.results.length;
           }
         }
         callback(message);
-        if (succeeded) { 
+        if (succeeded) {
           rooms[pin].numSucceeded++;
-          for (const player of rooms[pin].players) { 
-            if (player.id === socket.id) { 
+          for (const player of rooms[pin].players) {
+            if (player.id === socket.id) {
               console.log(message);
-              const submissionTimeMs = Date.now() - rooms[pin].gameStartTime; 
+              const submissionTimeMs = Date.now() - rooms[pin].gameStartTime;
               player.results.push({
                 succeeded,
                 avgCpuTimeMs,
@@ -249,41 +278,41 @@ const getClientConnectionHandler = (executor, io, pendingCallbacks) => {
             }
           }
 
-          if (rooms[pin].players.length === rooms[pin].numSucceeded) { 
+          if (rooms[pin].players.length === rooms[pin].numSucceeded) {
             clearTimeout(rooms[pin].gameTimeoutId);
-            rooms[pin].gameTimeoutId = null; 
+            rooms[pin].gameTimeoutId = null;
             io.to(pin).emit('score-results', rooms[pin].players);
-            io.to(pin).emit('set-page', {screen: 'scoreboard'});  
+            io.to(pin).emit('set-page', { screen: 'scoreboard' });
           } else {
-            socket.emit('set-page', {screen: 'submitted'});
+            socket.emit('set-page', { screen: 'submitted' });
             io.emit('players-remaining', rooms[pin].players.length - rooms[pin].numSucceeded);
           }
         }
       }
-    
-      pendingCallbacks.set(socket.id, {callback: onResult, inputs_code: rooms[pin].questions.io});
+
+      pendingCallbacks.set(socket.id, { callback: onResult, inputs_code: rooms[pin].questions.io });
       requestCodeExecution(executor, {
         player_id: socket.id,
         game_id: Number(pin) || 1,
         user_code: code,
-        inputs_code: rooms[pin].questions.io, 
+        inputs_code: rooms[pin].questions.io,
         test_code: rooms[pin].questions.test_func,
       });
     })
 
 
-    /* ---------------------------- User Run------------------------- */ 
+    /* ---------------------------- User Run------------------------- */
 
     socket.on('user-run', (code, callback) => {
       const pin = socket.pin;
       console.log(`Received code run from ${socket.id} in room ${pin}, sending to executor...`);
       // Store callback so we can call it when executor responds
-      pendingCallbacks.set(socket.id, {callback, inputs_code: rooms[pin].questions.io});
+      pendingCallbacks.set(socket.id, { callback, inputs_code: rooms[pin].questions.io });
       requestCodeExecution(executor, {
         player_id: socket.id,
         game_id: Number(pin) || 1,
         user_code: code,
-        inputs_code: rooms[pin].questions.io.slice(0, 3), 
+        inputs_code: rooms[pin].questions.io.slice(0, 3),
         test_code: rooms[pin].questions.test_func,
       });
     })
@@ -306,6 +335,6 @@ const getClientConnectionHandler = (executor, io, pendingCallbacks) => {
   }
 }
 
-export { getClientConnectionHandler } 
+export { getClientConnectionHandler }
 
 
