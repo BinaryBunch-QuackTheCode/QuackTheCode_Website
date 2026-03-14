@@ -1,6 +1,6 @@
 
 import { requestCodeExecution } from './executor-comms.js';
-import { leetcodeQuestion } from './leetcode.js';
+import { getRandomQuestion } from './db.js';
 import { startTimerToScreen, generateUniquePin } from './game-utils.js';
 
 
@@ -96,11 +96,11 @@ const getClientConnectionHandler = (executor, io, pendingCallbacks) => {
 
     /* -------------------- Create Game ---------------------- */
 
-    socket.on('create-game', (roundDuration, name, pin, callback) => {
+    socket.on('create-game', async (roundDuration, name, pin, callback) => {
 
       rooms[pin].players.push({ id: socket.id, role: 'host', name, results: [], points: 0, characterIndex: null });
       rooms[pin].roundDuration = roundDuration;
-      rooms[pin].questions = leetcodeQuestion[Math.floor(Math.random() * leetcodeQuestion.length)];
+      rooms[pin].questions = await getRandomQuestion();
       rooms[pin].hostId = socket.id;
 
       console.log('Created new game with PIN: ', pin);

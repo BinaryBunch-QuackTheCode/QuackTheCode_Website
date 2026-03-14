@@ -13,7 +13,7 @@ export const leetcodeQuestion = [
     },
     {
         question: 
-        'Given an array of integers nums and an integer target, return the indices i and j such that nums[i] + nums[j] == target and i != j. \n\nYou may assume that every input has exactly one pair of indices i and j that satisfy the condition. \n\nReturn the answer with the smaller index first.',
+        'Given two strings s and t, return true if t is an anagram of s, and false otherwise.\n\nAn anagram is a word or phrase formed by rearranging the letters of a different word or phrase, using all the original letters exactly once.',
         title: 'Valid Anagram',
         example: [{input: 's = "racecar", t = "carrace', output: 'Output: True'}, {input: 'Input: s = "jar", t = "jam', output: 'Output: False'}],
         id: 242,
