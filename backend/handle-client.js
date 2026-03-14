@@ -96,17 +96,16 @@ const getClientConnectionHandler = (executor, io, pendingCallbacks) => {
 
     /* -------------------- Create Game ---------------------- */
 
-    socket.on('create-game', async (roundDuration, name, pin, callback) => {
+    socket.on('create-game', (roundDuration, name, pin, callback) => {
 
       rooms[pin].players.push({ id: socket.id, role: 'host', name, results: [], points: 0, characterIndex: null });
       rooms[pin].roundDuration = roundDuration;
-      rooms[pin].questions = await getRandomQuestion();
       rooms[pin].hostId = socket.id;
 
       console.log('Created new game with PIN: ', pin);
       callback('host');
       const room = io.sockets.adapter.rooms.get(pin);
-      const playerCount = room ? room.sizS : 0;
+      const playerCount = room ? room.size : 0;
       io.to(pin).emit('player-count', playerCount);
       io.to(pin).emit('lobby-names', rooms[pin].players);
     });
@@ -186,12 +185,20 @@ const getClientConnectionHandler = (executor, io, pendingCallbacks) => {
 
     /* ------------------------- Start Game ------------------------ */
 
-    socket.on('start-game', (pin) => {
+    socket.on('start-game', async (pin) => {
       console.log(rooms[pin]);
       console.log('Host ID: ' + rooms[pin].hostId);
       console.log('Player ID: ' + socket.id);
 
       if (rooms[pin].hostId === socket.id) {
+        try {
+          rooms[pin].questions = await getRandomQuestion();
+        } catch (err) {
+          console.error('Failed to fetch question from DB:', err.message);
+          socket.emit('game-error', 'Failed to load question from database');
+          return;
+        }
+
         io.to(pin).emit('players-remaining', rooms[pin].players.length);
         rooms[pin].numSucceeded = 0;
         rooms[pin].roundNum++;
